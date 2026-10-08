@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: qrfood-postgres
+    environment:
+      POSTGRES_DB: qrfood
+      POSTGRES_USER: qrfood
+      POSTGRES_PASSWORD: qrfood
+    ports:
+      - "5433:5432"
+    volumes:
+      - qrfood_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qrfood -d qrfood"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: qrfood-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/qrfood
+      DATABASE_USERNAME: qrfood
+      DATABASE_PASSWORD: qrfood
+      JWT_SECRET: change-me-in-production
+      JWT_EXPIRATION: 86400000
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: qrfood-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+    ports:
+      - "5173:5173"
+
+volumes:
+  qrfood_pgdata:

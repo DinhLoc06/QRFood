@@ -1,0 +1,24 @@
+# General
+.DS_Store
+*.log
+
+# Java / Maven
+backend/target/
+backend/.idea/
+backend/.classpath
+backend/.project
+backend/.settings/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.idea/
+
+# Env
+.env
+.env.*
+!**/.env.example
+
+# IDE
+.vscode/
