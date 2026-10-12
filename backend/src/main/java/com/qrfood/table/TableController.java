@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class TableController {
     }
 
     @PostMapping("/tables")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<TableResponse>> createTable(@Valid @RequestBody TableRequest request) {
         DiningTable table = tableService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Table created", TableResponse.builder()

@@ -100,7 +100,12 @@ public class OrderService {
     @Transactional
     public Order updateStatus(Long orderId, String statusValue) {
         Order order = findById(orderId);
-        OrderStatus targetStatus = OrderStatus.valueOf(statusValue.toUpperCase());
+        OrderStatus targetStatus;
+        try {
+            targetStatus = OrderStatus.valueOf(statusValue.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new BusinessException(ErrorCode.INVALID_ORDER_STATUS, "Unknown order status: " + statusValue, HttpStatus.BAD_REQUEST);
+        }
         validateTransition(order.getStatus(), targetStatus);
         order.setStatus(targetStatus);
         if (targetStatus == OrderStatus.COMPLETED) {

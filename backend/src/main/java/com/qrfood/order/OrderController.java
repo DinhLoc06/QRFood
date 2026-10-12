@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,22 +28,28 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'KITCHEN')")
     public ResponseEntity<ApiResponse<List<OrderResponse>>> listOrders() {
         List<OrderResponse> orders = orderService.findAll().stream().map(this::toResponse).toList();
         return ResponseEntity.ok(ApiResponse.success(orders));
     }
 
     @PutMapping("/orders/{id}/confirm")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<ApiResponse<OrderResponse>> confirmOrder(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success("Order confirmed", toResponse(orderService.confirmOrder(id))));
     }
 
     @PutMapping("/orders/{id}/reject")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<ApiResponse<OrderResponse>> rejectOrder(@PathVariable Long id, @RequestParam(required = false) String reason) {
         return ResponseEntity.ok(ApiResponse.success("Order rejected", toResponse(orderService.rejectOrder(id, reason))));
     }
 
     @PutMapping("/orders/{id}/status")
+    @PreAuthorize("hasRole('ADMIN') or " +
+            "(hasRole('KITCHEN') and (#status == 'PREPARING' or #status == 'READY')) or " +
+            "(hasRole('STAFF') and (#status == 'SERVED' or #status == 'COMPLETED'))")
     public ResponseEntity<ApiResponse<OrderResponse>> updateStatus(@PathVariable Long id, @RequestParam String status) {
         return ResponseEntity.ok(ApiResponse.success("Order status updated", toResponse(orderService.updateStatus(id, status))));
     }

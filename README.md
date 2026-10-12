@@ -197,9 +197,13 @@ Lưu ý: PostgreSQL trong Docker được expose ra cổng 5433 để tránh xun
 
 ## Cơ sở dữ liệu
 
+Tài liệu đầy đủ về PostgreSQL local, mô hình quan hệ, các bảng, Flyway, truy vấn kiểm tra, sao lưu và reset: [docs/database.md](docs/database.md).
+
 Project sử dụng PostgreSQL và Flyway migration. File migration khởi tạo schema và dữ liệu mẫu nằm ở:
 
 - [backend/src/main/resources/db/migration/V1__init.sql](backend/src/main/resources/db/migration/V1__init.sql)
+- [backend/src/main/resources/db/migration/V2__demo_staff_accounts.sql](backend/src/main/resources/db/migration/V2__demo_staff_accounts.sql)
+- [backend/src/main/resources/db/migration/V3__payments.sql](backend/src/main/resources/db/migration/V3__payments.sql)
 
 Các bảng chính gồm:
 - users
@@ -209,6 +213,7 @@ Các bảng chính gồm:
 - products
 - orders
 - order_items
+- payments
 
 Dữ liệu mẫu được khởi tạo sẵn gồm:
 - 4 bàn: A01, A02, A03, A04
@@ -220,6 +225,14 @@ Dữ liệu mẫu được khởi tạo sẵn gồm:
 ```text
 Username: admin
 Password: admin123
+```
+
+Tài khoản demo theo vai trò:
+
+```text
+Quản trị: admin / admin123
+Nhân viên: staff / staff123
+Bếp: kitchen / kitchen123
 ```
 
 Thông tin tài khoản mặc định được khởi tạo khi migration chạy lần đầu.
@@ -241,7 +254,10 @@ Các endpoint quan trọng của hệ thống:
 - Sessions
   - POST /api/sessions
   - GET /api/sessions/{id}
-  - POST /api/sessions/{id}/close
+  - POST /api/payments
+  - GET /api/payments/session/{sessionId}
+  - GET /api/payments (ADMIN, STAFF)
+  - POST /api/payments/{id}/confirm (ADMIN, STAFF)
 
 - Products
   - GET /api/products
@@ -300,3 +316,36 @@ Dự án này có tiềm năng phát triển tiếp theo như:
 ## Kết luận
 
 QRFood là một project mẫu thực tế về xây dựng hệ thống đặt món trên nhà hàng theo mô hình QR ordering, gắn với quy trình nghiệp vụ rõ ràng, kiến trúc backend frontend tách biệt nhưng đồng bộ, và thể hiện tốt khả năng phát triển theo hướng production-ready. Nó phù hợp để học tập, demo, hoặc làm nền tảng cho các dự án tương tự.
+
+
+
+
+noi database bang powershell
+
+PS C:\WINDOWS\system32> psql -U qrfood -d qrfood -h localhost -p 5432
+Password for user qrfood:
+
+psql (18.6)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+qrfood=> DROP SCHEMA public CASCADE;
+NOTICE:  drop cascades to 8 other objects
+DETAIL:  drop cascades to table flyway_schema_history
+drop cascades to table users
+drop cascades to table tables
+drop cascades to table dining_sessions
+drop cascades to table categories
+drop cascades to table products
+drop cascades to table orders
+drop cascades to table order_items
+DROP SCHEMA
+qrfood=> CREATE SCHEMA public AUTHORIZATION qrfood;
+CREATE SCHEMA
+qrfood=> GRANT ALL ON SCHEMA public TO qrfood;
+GRANT
+qrfood=> GRANT ALL ON DATABASE qrfood TO qrfood;
+GRANT
+qrfood=> \q

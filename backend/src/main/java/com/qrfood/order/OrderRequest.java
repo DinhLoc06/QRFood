@@ -2,6 +2,7 @@ package com.qrfood.order;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.List;
@@ -15,5 +16,6 @@ public class OrderRequest {
 
     @Valid
     @NotNull
+    @NotEmpty
     private List<OrderItemRequest> items;
 }

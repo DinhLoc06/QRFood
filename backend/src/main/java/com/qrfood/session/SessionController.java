@@ -39,16 +39,4 @@ public class SessionController {
                 .build()));
     }
 
-    @PostMapping("/sessions/{id}/close")
-    public ResponseEntity<ApiResponse<SessionResponse>> closeSession(@PathVariable Long id) {
-        DiningSession session = sessionService.closeSession(id);
-        return ResponseEntity.ok(ApiResponse.success("Session closed", SessionResponse.builder()
-                .id(session.getId())
-                .tableNumber(session.getTable().getTableNumber())
-                .numberOfPeople(session.getNumberOfPeople())
-                .status(session.getStatus().name())
-                .startedAt(session.getStartedAt())
-                .endedAt(session.getEndedAt())
-                .build()));
-    }
 }

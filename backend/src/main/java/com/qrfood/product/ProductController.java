@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class ProductController {
     }
 
     @PostMapping("/products")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductResponse>> createProduct(@Valid @RequestBody ProductRequest request) {
         Product product = productService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Product created", ProductResponse.builder()
@@ -58,6 +60,7 @@ public class ProductController {
     }
 
     @PutMapping("/products/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
         Product product = productService.update(id, request);
         return ResponseEntity.ok(ApiResponse.success("Product updated", ProductResponse.builder()

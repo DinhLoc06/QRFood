@@ -44,6 +44,10 @@ public class SessionService {
     public DiningSession closeSession(Long sessionId) {
         DiningSession session = findById(sessionId);
 
+        if (session.getStatus() != SessionStatus.WAITING_PAYMENT) {
+            throw new BusinessException(ErrorCode.INVALID_PAYMENT_STATUS, "Session must be waiting for payment before it can be closed", HttpStatus.BAD_REQUEST);
+        }
+
         for (Order order : session.getOrders()) {
             if (order.getStatus() != OrderStatus.COMPLETED && order.getStatus() != OrderStatus.CANCELLED) {
                 throw new BusinessException(ErrorCode.INVALID_ORDER_STATUS, "All related orders must be completed before closing the session", HttpStatus.BAD_REQUEST);
