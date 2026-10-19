@@ -76,10 +76,10 @@ $menuPayload = array_map(static function (array $m): array {
             </div>
             <div class="cart-summary-sticky is-hidden" id="cartSummary">
                 <div class="cart-summary-inner">
-                    <div class="cart-summary-row"><span>Subtotal</span><span id="sumSub">₹0.00</span></div>
-                    <div class="cart-summary-row"><span>GST (<?= e((string) $gstRate) ?>%)</span><span id="sumGst">₹0.00</span></div>
-                    <div class="cart-summary-row" id="rowDeliveryFee" hidden><span>Delivery fee</span><span id="sumDelivery">₹0.00</span></div>
-                    <div class="cart-summary-total"><span>Total</span><span id="sumTotal">₹0.00</span></div>
+                    <div class="cart-summary-row"><span>Subtotal</span><span id="sumSub">0 ₫</span></div>
+                    <div class="cart-summary-row"><span>GST (<?= e((string) $gstRate) ?>%)</span><span id="sumGst">0 ₫</span></div>
+                    <div class="cart-summary-row" id="rowDeliveryFee" hidden><span>Delivery fee</span><span id="sumDelivery">0 ₫</span></div>
+                    <div class="cart-summary-total"><span>Total</span><span id="sumTotal">0 ₫</span></div>
                 </div>
                 <button type="button" class="btn btn-primary btn-block btn-lg" id="btnPlace" style="margin-top:0.75rem;">Place Order</button>
             </div>
@@ -148,7 +148,7 @@ $menuPayload = array_map(static function (array $m): array {
                 
                 <!-- UPI QR Section -->
                 <div id="upiQrSection" style="display:none; text-align:center; margin-bottom:1.5rem;">
-                    <p class="text-muted mb-2">Scan QR to pay ₹<span id="upiAmount">0</span></p>
+                    <p class="text-muted mb-2">Scan QR to pay <span id="upiAmount">0</span> ₫</p>
                     <div id="upiQrPlaceholder" style="width:180px; height:180px; background:#fff; margin:0 auto; padding:10px; border-radius:10px; border:1px solid #ddd">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=velvetplate@upi" alt="QR Code" style="width:160px; height:160px">
                     </div>

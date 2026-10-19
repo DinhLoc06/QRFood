@@ -67,6 +67,12 @@ final class MenuItem
         $st->execute([$id]);
     }
 
+    public static function deactivate(int $id): void
+    {
+        $st = Database::pdo()->prepare('UPDATE menu_items SET is_active = 0 WHERE id = ?');
+        $st->execute([$id]);
+    }
+
     /** @return list<array{menu_item_id:int,total_qty:int,name:string}> */
     public static function mostOrdered(int $limit = 5): array
     {

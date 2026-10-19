@@ -83,7 +83,7 @@ $catsPayload = array_map(static function (array $c): array {
                     </div>
                     <div class="form-grid-2">
                         <div class="form-group mb-0">
-                            <label class="form-label" for="itemPrice">Price (₹)</label>
+                            <label class="form-label" for="itemPrice">Price (VNĐ)</label>
                             <input class="form-input" id="itemPrice" type="number" step="0.01" min="0" required>
                         </div>
                         <div class="form-group mb-0">

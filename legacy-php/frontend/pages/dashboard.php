@@ -27,7 +27,7 @@ $dashPayload = [
         </article>
         <article class="stat-card">
             <p class="stat-label">Revenue (completed)</p>
-            <p class="stat-value" id="statRevenue">₹<?= number_format((float) $stats['revenue'], 2) ?></p>
+            <p class="stat-value" id="statRevenue"><?= number_format((float) $stats['revenue'], 0, ',', '.') ?> ₫</p>
         </article>
         <article class="stat-card">
             <p class="stat-label">Orders today</p>
@@ -35,7 +35,7 @@ $dashPayload = [
         </article>
         <article class="stat-card">
             <p class="stat-label">Revenue today</p>
-            <p class="stat-value" id="statRevenueToday">₹<?= number_format((float) $stats['revenue_today'], 2) ?></p>
+            <p class="stat-value" id="statRevenueToday"><?= number_format((float) $stats['revenue_today'], 0, ',', '.') ?> ₫</p>
         </article>
         <article class="stat-card">
             <p class="stat-label">Tables occupied</p>
@@ -131,11 +131,11 @@ $dashPayload = [
                 </div>
                 <div class="grid-stats grid-stats--auto mt-3">
                     <div class="form-group">
-                        <label class="form-label" for="zoneFee">Delivery Fee (₹)</label>
+                        <label class="form-label" for="zoneFee">Delivery Fee (VNĐ)</label>
                         <input type="number" class="form-input" id="zoneFee" step="0.01" value="0.00">
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="zoneMin">Min Order (₹)</label>
+                        <label class="form-label" for="zoneMin">Min Order (VNĐ)</label>
                         <input type="number" class="form-input" id="zoneMin" step="0.01" value="0.00">
                     </div>
                 </div>

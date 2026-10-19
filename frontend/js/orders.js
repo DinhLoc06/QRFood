@@ -8,7 +8,7 @@
     var btn = document.getElementById('btnRefreshOrders');
 
     function completedLabel(type) {
-        return type === 'DELIVERY' ? 'delivered' : 'served';
+        return type === 'DELIVERY' ? 'Đã giao' : 'Đã phục vụ';
     }
 
     function badgeClass(status) {
@@ -35,7 +35,7 @@
                   '</span>';
         var opts = ['pending', 'preparing', 'ready', 'completed']
             .map(function (st) {
-                var label = st === 'completed' ? completedLabel(type) : st;
+                var label = st === 'completed' ? completedLabel(type) : ({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng' }[st] || st);
                 var sel = String(o.status) === st ? ' selected' : '';
                 return '<option value="' + st + '"' + sel + '>' + label + '</option>';
             })
@@ -43,7 +43,7 @@
         var statusControl = includeStatusSelect
             ? '<select class="form-select status-select btn-sm" style="min-width:120px;padding:0.35rem;" data-order-id="' +
               id +
-              '" aria-label="Update status">' +
+              '" aria-label="Cập nhật trạng thái">' +
               opts +
               '</select>'
             : '';
@@ -51,33 +51,33 @@
             '<tr data-order-id="' +
             id +
             '">' +
-            '<td data-label="Code"><strong>' +
+            '<td data-label="Mã đơn"><strong>' +
             escapeHtml(String(o.order_code)) +
             '</strong></td>' +
-            '<td data-label="Type">' +
-            escapeHtml(type) +
+            '<td data-label="Hình thức">' +
+            escapeHtml(type === 'DINE_IN' ? 'Dùng tại quán' : 'Giao tận nơi') +
             '</td>' +
-            '<td data-label="Details">' +
+            '<td data-label="Chi tiết">' +
             detail +
             '</td>' +
-            '<td data-label="Status"><span class="' +
+            '<td data-label="Trạng thái"><span class="' +
             badgeClass(o.status) +
             '">' +
-            escapeHtml(String(o.status)) +
+            escapeHtml(({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng', completed: completedLabel(type) }[o.status] || String(o.status))) +
             '</span></td>' +
-            '<td data-label="Total">₹' +
-            Number(o.total).toFixed(2) +
+            '<td data-label="Tổng tiền">' +
+            Math.round(Number(o.total)).toLocaleString('vi-VN') + ' ₫' +
             '</td>' +
-            '<td data-label="Time" class="text-muted">' +
+            '<td data-label="Thời gian" class="text-muted">' +
             escapeHtml(String(o.created_at)) +
             '</td>' +
-            '<td data-label="Actions" class="no-print">' +
+            '<td data-label="Thao tác" class="no-print">' +
             '<div class="btn-group">' +
             '<a class="btn btn-outline btn-sm" href="' +
             window.SRMS.baseUrl +
             '/invoice/' +
             id +
-            '">Invoice</a>' +
+            '">Hóa đơn</a>' +
             statusControl +
             '</div></td></tr>'
         );
@@ -95,9 +95,9 @@
                         order_id: orderId,
                         status: status,
                     });
-                    window.SRMS.toast('Status updated');
+                    window.SRMS.toast('Đã cập nhật trạng thái');
                 } catch (e) {
-                    window.SRMS.toast(e.message || 'Update failed', true);
+                    window.SRMS.toast(e.message || 'Không thể cập nhật trạng thái', true);
                 } finally {
                     sel.disabled = false;
                 }
@@ -106,7 +106,7 @@
     }
 
     async function load() {
-        if (note) note.textContent = 'Syncing…';
+        if (note) note.textContent = 'Đang đồng bộ…';
         try {
             var data = await window.SRMS.apiFetch('api/order-list?limit=80');
             if (data && data.success && Array.isArray(data.data) && body) {
@@ -116,11 +116,11 @@
                 wireSelects();
             }
             if (note) {
-                note.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+                note.textContent = 'Cập nhật lần cuối: ' + new Date().toLocaleTimeString('vi-VN');
             }
         } catch (e) {
             if (note) note.textContent = '';
-            window.SRMS.toast(e.message || 'Could not load orders', true);
+            window.SRMS.toast(e.message || 'Không thể tải đơn hàng', true);
         }
     }
 

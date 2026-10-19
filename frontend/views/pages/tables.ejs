@@ -2,36 +2,36 @@
 <main id="main-content">
     <header class="page-header">
         <div>
-            <h1 class="page-title">Tables</h1>
-            <p class="page-sub">Create tables and set availability for dine-in</p>
+            <h1 class="page-title">Bàn ăn</h1>
+            <p class="page-sub">Tạo bàn và cập nhật tình trạng phục vụ tại quán</p>
         </div>
     </header>
 
     <section class="card">
         <div class="card-body">
-            <h2 class="card-title">Add or edit table</h2>
+            <h2 class="card-title">Thêm hoặc chỉnh sửa bàn</h2>
             <form id="tableForm" class="no-print" style="display:grid;gap:1rem;">
                 <input type="hidden" id="tableId" value="">
                 <div style="display:grid;gap:1rem;">
                     <div class="form-group" style="margin:0;">
-                        <label class="form-label" for="tableLabel">Label</label>
+                        <label class="form-label" for="tableLabel">Tên bàn</label>
                         <input class="form-input" id="tableLabel" maxlength="32" required placeholder="e.g. T6">
                     </div>
                     <div class="form-group" style="margin:0;">
-                        <label class="form-label" for="tableCap">Capacity</label>
+                        <label class="form-label" for="tableCap">Sức chứa</label>
                         <input class="form-input" id="tableCap" type="number" min="1" value="4" required>
                     </div>
                     <div class="form-group" style="margin:0;">
-                        <label class="form-label" for="tableStatus">Status</label>
+                        <label class="form-label" for="tableStatus">Trạng thái</label>
                         <select class="form-select" id="tableStatus">
-                            <option value="available">Available</option>
-                            <option value="occupied">Occupied</option>
+                            <option value="available">Còn trống</option>
+                            <option value="occupied">Đang sử dụng</option>
                         </select>
                     </div>
                 </div>
                 <div class="btn-group">
-                    <button type="submit" class="btn btn-primary">Save table</button>
-                    <button type="button" class="btn btn-secondary" id="tableReset">Clear</button>
+                    <button type="submit" class="btn btn-primary">Lưu bàn</button>
+                    <button type="button" class="btn btn-secondary" id="tableReset">Xóa nội dung</button>
                 </div>
             </form>
 
@@ -39,11 +39,11 @@
                 <table class="data-table" id="tablesTable">
                     <thead>
                         <tr>
-                            <th>Label</th>
-                            <th>Capacity</th>
-                            <th>Status</th>
-                            <th class="no-print">Quick</th>
-                            <th class="no-print">Actions</th>
+                            <th>Tên bàn</th>
+                            <th>Sức chứa</th>
+                            <th>Trạng thái</th>
+                            <th class="no-print">Cập nhật nhanh</th>
+                            <th class="no-print">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="tablesBody">
@@ -51,19 +51,19 @@
                             <tr data-table-id="<%= t.id %>">
                                 <td data-label="Label"><strong><%- e(t.label) %></strong></td>
                                 <td data-label="Capacity"><%= t.capacity %></td>
-                                <td data-label="Status">
+                                <td data-label="Trạng thái">
                                     <span class="badge <%= (t.status ?? '') === 'occupied' ? 'badge-occ' : 'badge-avail' %>"><%- e(t.status) %></span>
                                 </td>
                                 <td data-label="Quick" class="no-print">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-outline btn-sm tbl-st" data-id="<%= t.id %>" data-status="available">Available</button>
-                                        <button type="button" class="btn btn-outline btn-sm tbl-st" data-id="<%= t.id %>" data-status="occupied">Occupied</button>
+                                        <button type="button" class="btn btn-outline btn-sm tbl-st" data-id="<%= t.id %>" data-status="available">Còn trống</button>
+                                        <button type="button" class="btn btn-outline btn-sm tbl-st" data-id="<%= t.id %>" data-status="occupied">Đang sử dụng</button>
                                     </div>
                                 </td>
-                                <td data-label="Actions" class="no-print">
+                                <td data-label="Thao tác" class="no-print">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-outline btn-sm tbl-edit" data-id="<%= t.id %>">Edit</button>
-                                        <button type="button" class="btn btn-danger btn-sm tbl-del" data-id="<%= t.id %>">Delete</button>
+                                        <button type="button" class="btn btn-outline btn-sm tbl-edit" data-id="<%= t.id %>">Sửa</button>
+                                        <button type="button" class="btn btn-danger btn-sm tbl-del" data-id="<%= t.id %>">Xóa</button>
                                     </div>
                                 </td>
                             </tr>

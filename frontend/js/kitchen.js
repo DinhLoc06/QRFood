@@ -22,10 +22,10 @@
 
     function labelForNext(type, st) {
         var n = nextStatus(st);
-        if (n === 'completed') return type === 'DELIVERY' ? 'Mark delivered' : 'Mark served';
-        if (n === 'preparing') return 'Start preparing';
-        if (n === 'ready') return 'Mark ready';
-        return 'Update';
+        if (n === 'completed') return type === 'DELIVERY' ? 'Đã giao hàng' : 'Đã phục vụ';
+        if (n === 'preparing') return 'Bắt đầu chế biến';
+        if (n === 'ready') return 'Món đã sẵn sàng';
+        return 'Cập nhật';
     }
 
     function escapeHtml(s) {
@@ -44,8 +44,8 @@
         var st = String(o.status || '');
         var head =
             type === 'DINE_IN'
-                ? 'Table ' + escapeHtml(String(o.table_label || '—'))
-                : 'Delivery · ' + escapeHtml(String(o.customer_name || ''));
+                ? 'Bàn ' + escapeHtml(String(o.table_label || '—'))
+                : 'Giao hàng · ' + escapeHtml(String(o.customer_name || ''));
         var meta =
             escapeHtml(String(o.order_code)) +
             ' · ' +
@@ -90,7 +90,7 @@
     }
 
     async function load() {
-        if (sync) sync.textContent = 'Refreshing…';
+        if (sync) sync.textContent = 'Đang làm mới…';
         if (loadEl) loadEl.classList.add('is-visible');
         try {
             var data = await window.SRMS.apiFetch('api/kitchen-orders');
@@ -115,27 +115,27 @@
                                     order_id: oid,
                                     status: nx,
                                 });
-                                window.SRMS.toast('Updated');
+                                window.SRMS.toast('Đã cập nhật');
                                 await load();
                             } catch (e) {
-                                window.SRMS.toast(e.message || 'Failed', true);
+                                window.SRMS.toast(e.message || 'Thao tác không thành công', true);
                                 btn.disabled = false;
                             }
                         });
                     });
                 }
-                if (sync) sync.textContent = 'Last sync: ' + new Date().toLocaleTimeString();
+                if (sync) sync.textContent = 'Đồng bộ lần cuối: ' + new Date().toLocaleTimeString('vi-VN');
             }
         } catch (e) {
             if (sync) sync.textContent = '';
-            window.SRMS.toast(e.message || 'Kitchen sync failed', true);
+            window.SRMS.toast(e.message || 'Không thể đồng bộ nhà bếp', true);
             if (grid) {
                 grid.hidden = true;
                 grid.innerHTML = '';
             }
             if (empty) {
                 empty.hidden = false;
-                empty.textContent = 'Could not load kitchen queue. Check connection and try again.';
+                empty.textContent = 'Không thể tải hàng đợi nhà bếp. Hãy kiểm tra kết nối và thử lại.';
             }
         } finally {
             if (loadEl) loadEl.classList.remove('is-visible');

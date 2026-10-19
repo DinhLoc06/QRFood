@@ -43,7 +43,7 @@ test('login rejects missing CSRF tokens without contacting the database', async 
     assert.equal(response.headers.get('location'), '/login');
 
     const retry = await fetch(`${base}/login`, { headers: { cookie } });
-    assert.match(await retry.text(), /Invalid session\. Please try again\./);
+    assert.match(await retry.text(), /Phiên đăng nhập không hợp lệ\. Vui lòng thử lại\./);
 });
 
 test('unauthenticated API requests and protected pages are rejected cleanly', async () => {
@@ -69,7 +69,7 @@ test('unauthenticated API requests and protected pages are rejected cleanly', as
         body: JSON.stringify({ type: 'DINE_IN', cart: [] }),
     });
     assert.equal(order.status, 403);
-    assert.match((await order.json()).error, /Invalid session/);
+    assert.match((await order.json()).error, /Phiên đăng nhập không hợp lệ/);
 });
 
 test('static browser assets and the EJS 404 page are served', async () => {
@@ -79,7 +79,7 @@ test('static browser assets and the EJS 404 page are served', async () => {
 
     const missing = await fetch(`${base}/missing`);
     assert.equal(missing.status, 404);
-    assert.match(await missing.text(), /404 — Not found/);
+    assert.match(await missing.text(), /404 — Không tìm thấy trang/);
 
     const privateTemplate = await fetch(`${base}/frontend/views/pages/home.ejs`);
     assert.equal(privateTemplate.status, 404);
@@ -134,7 +134,7 @@ test('all EJS screens render with representative request data', async () => {
             assert.match(html, /<!DOCTYPE html>/, `${filename} should render a complete document for ${role}`);
             if (filename === 'public_menu.ejs' && role === 'guest') {
                 assert.match(html, /id="btnPlace"/);
-                assert.match(html, /Select Table for Dine-in/);
+                assert.match(html, /Chọn bàn/);
                 assert.doesNotMatch(html, /Sign in to Order/);
             }
         }

@@ -22,7 +22,7 @@
             }),
             datasets: [
                 {
-                    label: 'Revenue (₹)',
+                    label: 'Doanh thu (VNĐ)',
                     data: (boot.revenueByDay || []).map(function (r) {
                         return Number(r.total);
                     }),
@@ -68,7 +68,7 @@
     });
 
     function money(n) {
-        return '₹' + Number(n).toFixed(2);
+        return Math.round(Number(n)).toLocaleString('vi-VN') + ' ₫';
     }
 
     async function refresh() {
@@ -92,7 +92,7 @@
             var pop = document.getElementById('popularList');
             if (pop && Array.isArray(d.popular)) {
                 if (d.popular.length === 0) {
-                    pop.innerHTML = '<p class="text-muted mt-0">No completed orders yet.</p>';
+                    pop.innerHTML = '<p class="text-muted mt-0">Chưa có đơn hàng hoàn tất.</p>';
                 } else {
                     pop.innerHTML =
                         '<ul class="kitchen-items">' +
@@ -103,7 +103,7 @@
                                     String(p.name).replace(/</g, '&lt;') +
                                     '</strong> — ' +
                                     Number(p.total_qty) +
-                                    ' sold</li>'
+                                    ' đã bán</li>'
                                 );
                             })
                             .join('') +
@@ -130,7 +130,7 @@
                 statusChart.update();
             }
         } catch (e) {
-            window.SRMS.toast(e.message || 'Dashboard refresh failed', true);
+            window.SRMS.toast(e.message || 'Không thể làm mới bảng tổng quan', true);
         }
     }
 
@@ -141,7 +141,7 @@
             var data = await window.SRMS.apiFetch('api/zone-list');
             if (data && data.success && Array.isArray(data.data)) {
                 if (data.data.length === 0) {
-                    body.innerHTML = '<tr><td colspan="5" class="text-muted">No zones defined.</td></tr>';
+                    body.innerHTML = '<tr><td colspan="5" class="text-muted">Chưa có khu vực giao hàng.</td></tr>';
                 } else {
                     body.innerHTML = data.data.map(function(z) {
                         return '<tr>' +
@@ -150,7 +150,7 @@
                             '<td>' + money(Number(z.delivery_fee)) + '</td>' +
                             '<td>' + money(Number(z.min_order)) + '</td>' +
                             '<td>' + 
-                                '<button class="btn btn-ghost btn-sm" onclick="alert(\'Edit Zone ID: ' + z.id + '\')">Edit</button>' +
+                                '<button class="btn btn-ghost btn-sm" onclick="alert(\'Sửa khu vực: ' + z.id + '\')">Sửa</button>' +
                             '</td>' +
                             '</tr>';
                     }).join('');
@@ -168,13 +168,13 @@
     
     function openZone(z = null) {
         if (!zModal || !zForm) return;
-        document.getElementById('zoneModalTitle').textContent = z ? 'Edit Delivery Zone' : 'Add Delivery Zone';
+        document.getElementById('zoneModalTitle').textContent = z ? 'Sửa khu vực giao hàng' : 'Thêm khu vực giao hàng';
         document.getElementById('zoneId').value = z ? z.id : '';
         document.getElementById('zoneName').value = z ? z.name : '';
         document.getElementById('zonePincodes').value = z ? z.pincodes : '';
         document.getElementById('zoneFee').value = z ? z.delivery_fee : '0.00';
         document.getElementById('zoneMin').value = z ? z.min_order : '0.00';
-        document.getElementById('zoneTime').value = z ? z.estimated_time : '30-45 mins';
+        document.getElementById('zoneTime').value = z ? z.estimated_time : '30-45 phút';
         document.getElementById('zoneActive').checked = z ? !!Number(z.is_active) : true;
         
         zModal.classList.add('is-active');
@@ -207,12 +207,12 @@
             try {
                 var res = await window.SRMS.apiPostJson('api/zone-save', payload);
                 if (res.success) {
-                    window.SRMS.toast('Zone saved successfully');
+                    window.SRMS.toast('Đã lưu khu vực giao hàng');
                     closeZone();
                     refreshZones();
                 }
             } catch (err) {
-                window.SRMS.toast(err.message || 'Failed to save zone', true);
+                window.SRMS.toast(err.message || 'Không thể lưu khu vực', true);
             }
         });
     }
@@ -236,7 +236,7 @@
             var data = await window.SRMS.apiFetch('api/zone-list');
             if (data && data.success && Array.isArray(data.data)) {
                 if (data.data.length === 0) {
-                    body.innerHTML = '<tr><td colspan="5" class="text-muted">No zones defined.</td></tr>';
+                    body.innerHTML = '<tr><td colspan="5" class="text-muted">Chưa có khu vực giao hàng.</td></tr>';
                 } else {
                     body.innerHTML = data.data.map(function(z) {
                         return '<tr>' +
@@ -245,7 +245,7 @@
                             '<td>' + money(Number(z.delivery_fee)) + '</td>' +
                             '<td>' + money(Number(z.min_order)) + '</td>' +
                             '<td>' + 
-                                '<button class="btn btn-ghost btn-sm edit-zone-btn" data-id="' + z.id + '">Edit</button>' +
+                                '<button class="btn btn-ghost btn-sm edit-zone-btn" data-id="' + z.id + '">Sửa</button>' +
                             '</td>' +
                             '</tr>';
                     }).join('');

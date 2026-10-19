@@ -60,7 +60,7 @@
         var all = document.createElement('button');
         all.type = 'button';
         all.className = 'chip is-active';
-        all.textContent = 'All';
+        all.textContent = 'Tất cả';
         all.addEventListener('click', function () {
             activeCat = null;
             chipsEl.querySelectorAll('.chip').forEach(function (c) {
@@ -106,7 +106,7 @@
         var list = filterItems();
         gridEl.innerHTML = '';
         if (list.length === 0) {
-            gridEl.innerHTML = '<p class="text-muted">No dishes match your search.</p>';
+            gridEl.innerHTML = '<p class="text-muted">Không tìm thấy món ăn phù hợp.</p>';
             return;
         }
         list.forEach(function (it) {
@@ -120,7 +120,7 @@
             var hasImage = !!imgSrc;
             if (hasImage) {
                 img = document.createElement('img');
-                img.alt = String(it.name || 'Dish photo');
+                img.alt = String(it.name || 'Ảnh món ăn');
                 img.className = 'menu-card-img';
                 img.loading = 'lazy';
                 img.addEventListener('load', function () {
@@ -190,7 +190,7 @@
                 var ribbon = document.createElement('span');
                 ribbon.className = 'menu-card-ribbon';
                 ribbon.setAttribute('aria-hidden', 'true');
-                ribbon.textContent = 'Chef’s pick';
+                ribbon.textContent = 'Bếp trưởng gợi ý';
                 wrapper.appendChild(ribbon);
             }
             
@@ -207,7 +207,7 @@
     }
 
     function formatMoney(n) {
-        return '₹' + n.toFixed(2);
+        return Math.round(n).toLocaleString('vi-VN') + ' ₫';
     }
 
     function renderActionRowInner(actionRow, id, qty) {
@@ -241,10 +241,10 @@
             btnAdd.type = 'button';
             btnAdd.className = 'btn btn-outline btn-sm';
             btnAdd.style.padding = '0.35rem 0.75rem';
-            btnAdd.textContent = 'Add';
+            btnAdd.textContent = 'Thêm';
             btnAdd.addEventListener('click', function () {
                 setQty(id, 1);
-                if (window.SRMS.toast) window.SRMS.toast('Added to your tray — adjust quantity here anytime.');
+                if (window.SRMS.toast) window.SRMS.toast('Đã thêm món vào giỏ.');
             });
             actionRow.appendChild(btnAdd);
         }
@@ -277,13 +277,6 @@
         var gst = Math.round(sub * (gstRate / 100) * 100) / 100;
 
         var delFee = 0;
-        if (orderType && orderType.value === 'DELIVERY') {
-            var service = localStorage.getItem('vp_service');
-            if (service) {
-                var sData = JSON.parse(service);
-                delFee = Number(sData.delivery_fee || 0);
-            }
-        }
 
         var total = Math.round((sub + gst + delFee) * 100) / 100;
         return { sub: sub, gst: gst, delivery: delFee, total: total };
@@ -316,7 +309,7 @@
             var right = document.createElement('div');
             right.style.textAlign = 'right';
             right.innerHTML =
-                '<div>' + formatMoney(Number(it.price) * qty) + '</div><button type="button" class="btn btn-ghost btn-sm remove-line" data-id="' + id + '">Remove</button>';
+                '<div>' + formatMoney(Number(it.price) * qty) + '</div><button type="button" class="btn btn-ghost btn-sm remove-line" data-id="' + id + '">Xóa</button>';
             line.appendChild(left);
             line.appendChild(right);
             cartLines.appendChild(line);
@@ -359,7 +352,7 @@
         btnPlace.addEventListener('click', function () {
             var ids = Object.keys(cart).filter(k => cart[k] > 0);
             if (ids.length === 0) {
-                window.SRMS.toast('Cart is empty', true);
+                window.SRMS.toast('Giỏ món đang trống', true);
                 return;
             }
 
@@ -367,7 +360,7 @@
                 var selectedId = selectedTableInput ? selectedTableInput.value : '0';
 
                 if (!selectedId || selectedId === '0') {
-                    window.SRMS.toast('Please select a table first', true);
+                    window.SRMS.toast('Vui lòng chọn bàn trước', true);
                     return;
                 }
             }
@@ -377,20 +370,9 @@
             var isDineIn = orderType.value === 'DINE_IN';
             if (wrapAddr) wrapAddr.style.display = isDineIn ? 'none' : 'block';
 
-            if (!isDineIn) {
-                var savedLoc = localStorage.getItem('vp_address');
-                var savedPin = localStorage.getItem('vp_pincode');
-                var locInfo = document.getElementById('detectedLocationInfo');
-                if (savedLoc && savedPin) {
-                    var addrEl = document.getElementById('checkoutAddr');
-                    if (addrEl) addrEl.value = savedLoc + ' (' + savedPin + ')';
-                    if (locInfo) locInfo.textContent = '\uD83D\uDCCD Delivering to: ' + savedPin;
-                }
-            }
-
             // Update modal title
             var modalTitle = document.getElementById('checkoutModalTitle');
-            if (modalTitle) modalTitle.textContent = isDineIn ? 'Dine-in Details' : 'Delivery Details';
+            if (modalTitle) modalTitle.textContent = isDineIn ? 'Thông tin dùng tại quán' : 'Thông tin giao hàng';
 
             checkoutModal.classList.add('is-active');
             showStep('Address');
@@ -403,7 +385,7 @@
         var addr = (document.getElementById('checkoutAddr')?.value || '').trim();
 
         if (!name || !phone || (orderType.value === 'DELIVERY' && !addr)) {
-            window.SRMS.toast('Please fill in all required details', true);
+            window.SRMS.toast('Vui lòng nhập đầy đủ thông tin bắt buộc', true);
             return;
         }
         showStep('Payment');
@@ -415,13 +397,13 @@
         var addr = (document.getElementById('checkoutAddr')?.value || '').trim();
         var method = document.querySelector('input[name="paymentMethod"]:checked').value;
 
-        document.getElementById('confirmSummaryName').textContent = 'Name: ' + name;
-        document.getElementById('confirmSummaryPhone').textContent = 'Phone: ' + phone;
+        document.getElementById('confirmSummaryName').textContent = 'Họ tên: ' + name;
+        document.getElementById('confirmSummaryPhone').textContent = 'Điện thoại: ' + phone;
 
         var summaryAddr = document.getElementById('confirmSummaryAddr');
         if (summaryAddr) {
             if (orderType.value === 'DELIVERY') {
-                summaryAddr.textContent = 'Address: ' + addr;
+                summaryAddr.textContent = 'Địa chỉ: ' + addr;
                 summaryAddr.style.display = 'block';
             } else {
                 summaryAddr.style.display = 'none';
@@ -441,7 +423,7 @@
     document.getElementById('btnFinalConfirm')?.addEventListener('click', async () => {
         var btn = document.getElementById('btnFinalConfirm');
         btn.disabled = true;
-        btn.textContent = 'Processing...';
+        btn.textContent = 'Đang xử lý...';
 
         var lines = Object.keys(cart).map(k => ({ menu_item_id: Number(k), quantity: cart[k] }));
         var method = document.querySelector('input[name="paymentMethod"]:checked').value;
@@ -469,13 +451,13 @@
                 renderGrid();
                 showStep('Success');
             } else {
-                window.SRMS.toast(res.error || 'Order failed. Please try again.', true);
+                window.SRMS.toast(res.error || 'Đặt món không thành công. Vui lòng thử lại.', true);
             }
         } catch (err) {
-            window.SRMS.toast(err.message || 'Something went wrong. Please try again.', true);
+            window.SRMS.toast(err.message || 'Đã xảy ra lỗi. Vui lòng thử lại.', true);
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Confirm & Place Order';
+            btn.textContent = 'Xác nhận đặt món';
         }
     });
 

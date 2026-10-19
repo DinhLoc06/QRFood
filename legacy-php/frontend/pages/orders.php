@@ -49,7 +49,7 @@ require dirname(__DIR__) . '/partials/app_shell_start.php';
                             <?php endif; ?>
                         </td>
                         <td data-label="Status"><span class="badge <?= e('badge-' . preg_replace('/[^a-z]/', '', (string) $o['status'])) ?>"><?= e((string) $o['status']) ?></span></td>
-                        <td data-label="Total">₹<?= number_format((float) $o['total'], 2) ?></td>
+                        <td data-label="Total"><?= number_format((float) $o['total'], 0, ',', '.') ?> ₫</td>
                         <td data-label="Time" class="text-muted"><?= e((string) $o['created_at']) ?></td>
                         <td data-label="Actions" class="no-print">
                             <div class="btn-group">

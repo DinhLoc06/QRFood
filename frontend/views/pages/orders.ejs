@@ -2,13 +2,13 @@
 <main id="main-content" data-customer="<%= role === 'customer' ? '1' : '0' %>">
     <header class="page-header">
         <div>
-            <h1 class="page-title">Orders</h1>
-            <p class="page-sub"><%= role === 'customer' ? 'Your recent orders' : 'Track and update order status' %></p>
+            <h1 class="page-title">Đơn hàng</h1>
+            <p class="page-sub"><%= role === 'customer' ? 'Các đơn hàng gần đây của bạn' : 'Theo dõi và cập nhật trạng thái đơn hàng' %></p>
         </div>
         <div class="btn-group">
-            <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshOrders">Refresh</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshOrders">Làm mới</button>
             <% if (role !== 'customer') { %>
-                <a class="btn btn-primary btn-sm" href="<%- e(appUrl('pos')) %>">New order</a>
+                <a class="btn btn-primary btn-sm" href="<%- e(appUrl('pos')) %>">Tạo đơn mới</a>
             <% } %>
         </div>
     </header>
@@ -19,20 +19,20 @@
         <table class="data-table" id="ordersTable">
             <thead>
                 <tr>
-                    <th>Code</th>
-                    <th>Type</th>
-                    <th>Table / Customer</th>
-                    <th>Status</th>
-                    <th>Total</th>
-                    <th>Time</th>
-                    <th class="no-print">Actions</th>
+                    <th>Mã đơn</th>
+                    <th>Hình thức</th>
+                    <th>Bàn / Khách hàng</th>
+                    <th>Trạng thái</th>
+                    <th>Tổng tiền</th>
+                    <th>Thời gian</th>
+                    <th class="no-print">Thao tác</th>
                 </tr>
             </thead>
             <tbody id="ordersBody">
                 <% for (const o of orders || []) { %>
                     <tr data-order-id="<%= o.id %>">
                         <td data-label="Code"><strong><%- e(o.order_code) %></strong></td>
-                        <td data-label="Type"><%- e(o.type) %></td>
+                        <td data-label="Hình thức"><%- e((o.type ?? '') === 'DINE_IN' ? 'Dùng tại quán' : 'Giao tận nơi') %></td>
                         <td data-label="Details">
                             <% if ((o.type ?? '') === 'DINE_IN') { %>
                                 <%- e((o.table_label ?? '—')) %>
@@ -41,16 +41,16 @@
                                 <span class="text-muted"><%- e((o.customer_phone ?? '')) %></span>
                             <% } %>
                         </td>
-                        <td data-label="Status"><span class="badge <%- e('badge-' + o.status.replace(/[^a-z]/g, '')) %>"><%- e(o.status) %></span></td>
-                        <td data-label="Total">₹<%= Number(o.total).toFixed(2) %></td>
-                        <td data-label="Time" class="text-muted"><%- e(o.created_at) %></td>
-                        <td data-label="Actions" class="no-print">
+                        <td data-label="Trạng thái"><span class="badge <%- e('badge-' + o.status.replace(/[^a-z]/g, '')) %>"><%- e(({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng', completed: (o.type ?? '') === 'DELIVERY' ? 'Đã giao' : 'Đã phục vụ' })[o.status] || o.status) %></span></td>
+                        <td data-label="Tổng tiền"><%= Math.round(Number(o.total)).toLocaleString('vi-VN') %> ₫</td>
+                        <td data-label="Thời gian" class="text-muted"><%- e(o.created_at) %></td>
+                        <td data-label="Thao tác" class="no-print">
                             <div class="btn-group">
-                                <a class="btn btn-outline btn-sm" href="<%- e(appUrl('invoice/' + o.id)) %>">Invoice</a>
+                                <a class="btn btn-outline btn-sm" href="<%- e(appUrl('invoice/' + o.id)) %>">Hóa đơn</a>
                                 <% if (role !== 'customer') { %>
-                                <select class="form-select status-select btn-sm" style="min-width:120px;padding:0.35rem;" data-order-id="<%= o.id %>" aria-label="Update status for <%- e(o.order_code) %>">
+                                <select class="form-select status-select btn-sm" style="min-width:120px;padding:0.35rem;" data-order-id="<%= o.id %>" aria-label="Cập nhật trạng thái cho <%- e(o.order_code) %>">
                                     <% for (const st of ["pending", "preparing", "ready", "completed"]) { %>
-                                        <option value="<%= st %>" <%= (o.status ?? '') === st ? 'selected' : '' %>><%= st === 'completed' ? ((o.type ?? '') === 'DELIVERY' ? 'delivered' : 'served') : st %></option>
+                                        <option value="<%= st %>" <%= (o.status ?? '') === st ? 'selected' : '' %>><%= st === 'completed' ? ((o.type ?? '') === 'DELIVERY' ? 'Đã giao' : 'Đã phục vụ') : ({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng' }[st] || st) %></option>
                                     <% } %>
                                 </select>
                                 <% } %>

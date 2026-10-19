@@ -31,24 +31,24 @@
                     escapeHtml(String(t.label)) +
                     '</strong></td><td data-label="Capacity">' +
                     Number(t.capacity) +
-                    '</td><td data-label="Status"><span class="badge ' +
+                    '</td><td data-label="Trạng thái"><span class="badge ' +
                     badge +
                     '">' +
                     escapeHtml(st) +
                     '</span></td><td data-label="Quick" class="no-print"><div class="btn-group">' +
                     '<button type="button" class="btn btn-outline btn-sm tbl-st" data-id="' +
                     id +
-                    '" data-status="available">Available</button>' +
+                    '" data-status="available">Còn trống</button>' +
                     '<button type="button" class="btn btn-outline btn-sm tbl-st" data-id="' +
                     id +
-                    '" data-status="occupied">Occupied</button></div></td>' +
-                    '<td data-label="Actions" class="no-print"><div class="btn-group">' +
+                    '" data-status="occupied">Đang sử dụng</button></div></td>' +
+                    '<td data-label="Thao tác" class="no-print"><div class="btn-group">' +
                     '<button type="button" class="btn btn-outline btn-sm tbl-edit" data-id="' +
                     id +
-                    '">Edit</button>' +
+                    '">Sửa</button>' +
                     '<button type="button" class="btn btn-danger btn-sm tbl-del" data-id="' +
                     id +
-                    '">Delete</button></div></td></tr>'
+                    '">Xóa</button></div></td></tr>'
                 );
             })
             .join('');
@@ -60,7 +60,7 @@
             var data = await window.SRMS.apiFetch('api/tables');
             if (data && data.success) render(data.data);
         } catch (e) {
-            window.SRMS.toast(e.message || 'Could not load tables', true);
+            window.SRMS.toast(e.message || 'Không thể tải danh sách bàn', true);
         }
     }
 
@@ -82,14 +82,14 @@
         });
         body.querySelectorAll('.tbl-del').forEach(function (b) {
             b.addEventListener('click', async function () {
-                if (!confirm('Delete this table?')) return;
+                if (!confirm('Bạn có chắc muốn xóa bàn này?')) return;
                 var id = Number(b.getAttribute('data-id'));
                 try {
                     await window.SRMS.apiPostJson('api/table-delete', { id: id });
-                    window.SRMS.toast('Table removed');
+                    window.SRMS.toast('Đã xóa bàn');
                     await load();
                 } catch (e) {
-                    window.SRMS.toast(e.message || 'Delete failed', true);
+                    window.SRMS.toast(e.message || 'Không thể xóa bàn', true);
                 }
             });
         });
@@ -101,7 +101,7 @@
                     await window.SRMS.apiPostJson('api/table-status', { id: id, status: st });
                     await load();
                 } catch (e) {
-                    window.SRMS.toast(e.message || 'Update failed', true);
+                    window.SRMS.toast(e.message || 'Không thể cập nhật trạng thái bàn', true);
                 }
             });
         });
@@ -119,11 +119,11 @@
             if (id > 0) payload.id = id;
             try {
                 await window.SRMS.apiPostJson('api/table-save', payload);
-                window.SRMS.toast('Table saved');
+                window.SRMS.toast('Đã lưu bàn');
                 if (reset) reset.click();
                 await load();
             } catch (err) {
-                window.SRMS.toast(err.message || 'Save failed', true);
+                window.SRMS.toast(err.message || 'Không thể lưu bàn', true);
             }
         });
     }

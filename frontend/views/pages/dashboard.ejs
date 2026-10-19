@@ -2,35 +2,35 @@
 <main id="main-content">
     <header class="page-header">
         <div>
-            <h1 class="page-title">Dashboard</h1>
-            <p class="page-sub">Live overview of operations and performance</p>
+            <h1 class="page-title">Tổng quan</h1>
+            <p class="page-sub">Theo dõi hoạt động và hiệu quả kinh doanh theo thời gian thực</p>
         </div>
-        <button type="button" class="btn btn-secondary btn-sm" id="refreshDashboard">Refresh</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="refreshDashboard">Làm mới</button>
     </header>
 
     <div class="grid-stats grid-stats--auto" id="statGrid">
         <article class="stat-card">
-            <p class="stat-label">Total orders</p>
+            <p class="stat-label">Tổng đơn hàng</p>
             <p class="stat-value" id="statTotalOrders"><%= stats.total_orders %></p>
         </article>
         <article class="stat-card">
-            <p class="stat-label">Revenue (completed)</p>
-            <p class="stat-value" id="statRevenue">₹<%= Number(stats.revenue).toFixed(2) %></p>
+            <p class="stat-label">Doanh thu đã hoàn tất</p>
+            <p class="stat-value" id="statRevenue"><%= Math.round(Number(stats.revenue)).toLocaleString('vi-VN') %> ₫</p>
         </article>
         <article class="stat-card">
-            <p class="stat-label">Orders today</p>
+            <p class="stat-label">Đơn hàng hôm nay</p>
             <p class="stat-value" id="statOrdersToday"><%= stats.orders_today %></p>
         </article>
         <article class="stat-card">
-            <p class="stat-label">Revenue today</p>
-            <p class="stat-value" id="statRevenueToday">₹<%= Number(stats.revenue_today).toFixed(2) %></p>
+            <p class="stat-label">Doanh thu hôm nay</p>
+            <p class="stat-value" id="statRevenueToday"><%= Math.round(Number(stats.revenue_today)).toLocaleString('vi-VN') %> ₫</p>
         </article>
         <article class="stat-card">
-            <p class="stat-label">Tables occupied</p>
+            <p class="stat-label">Bàn đang sử dụng</p>
             <p class="stat-value" id="statOccupied"><%= stats.tables_occupied %></p>
         </article>
         <article class="stat-card">
-            <p class="stat-label">Tables available</p>
+            <p class="stat-label">Bàn còn trống</p>
             <p class="stat-value" id="statAvailable"><%= stats.tables_available %></p>
         </article>
     </div>
@@ -40,32 +40,32 @@
             <% if (true) { %>
             <section class="card">
                 <div class="card-body">
-                    <h2 class="card-title">Revenue (last 7 days)</h2>
+                    <h2 class="card-title">Doanh thu 7 ngày gần nhất</h2>
                     <div class="chart-wrap">
-                        <canvas id="revenueChart" aria-label="Revenue chart"></canvas>
+                        <canvas id="revenueChart" aria-label="Biểu đồ doanh thu"></canvas>
                     </div>
                 </div>
             </section>
             <% } %>
             <section class="card">
                 <div class="card-body">
-                    <h2 class="card-title">Orders by status</h2>
+                    <h2 class="card-title">Đơn hàng theo trạng thái</h2>
                     <div class="chart-wrap chart-wrap--narrow">
-                        <canvas id="statusChart" aria-label="Status chart"></canvas>
+                        <canvas id="statusChart" aria-label="Biểu đồ trạng thái đơn hàng"></canvas>
                     </div>
                 </div>
             </section>
         </div>
         <section class="card">
             <div class="card-body">
-                <h2 class="card-title">Popular items (completed orders)</h2>
+                <h2 class="card-title">Món được yêu thích</h2>
                 <div id="popularList">
                     <% if (!popular?.length) { %>
-                        <p class="text-muted mt-0">No completed orders yet.</p>
+                        <p class="text-muted mt-0">Chưa có đơn hàng hoàn tất.</p>
                     <% } else { %>
                         <ul class="kitchen-items">
                             <% for (const p of popular || []) { %>
-                                <li><strong><%- e(p.name) %></strong> — <%= p.total_qty %> sold</li>
+                                <li><strong><%- e(p.name) %></strong> — đã bán <%= p.total_qty %></li>
                             <% } %>
                         </ul>
                     <% } %>
@@ -75,24 +75,24 @@
         </section>
         <section class="card" id="locationMgmtSection">
             <div class="card-body">
-                <h2 class="card-title">Delivery Zones</h2>
+                <h2 class="card-title">Khu vực giao hàng</h2>
                 <div class="table-responsive">
                     <table class="table-lux">
                         <thead>
                             <tr>
-                                <th>Zone Name</th>
-                                <th>Pincodes</th>
-                                <th>Fee</th>
-                                <th>Min Order</th>
-                                <th>Actions</th>
+                                <th>Tên khu vực</th>
+                                <th>Mã bưu chính</th>
+                                <th>Phí giao hàng</th>
+                                <th>Đơn tối thiểu</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody id="zoneTableBody">
-                            <tr><td colspan="5" class="text-muted">Loading zones...</td></tr>
+                            <tr><td colspan="5" class="text-muted">Đang tải khu vực...</td></tr>
                         </tbody>
                     </table>
                 </div>
-                <button type="button" class="btn btn-primary btn-sm mt-3" id="btnAddZone">Add New Delivery Zone</button>
+                <button type="button" class="btn btn-primary btn-sm mt-3" id="btnAddZone">Thêm khu vực giao hàng</button>
             </div>
         </section>
     </div>
@@ -103,42 +103,42 @@
     <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title" id="zoneModalTitle">Add Delivery Zone</h3>
+            <h3 class="modal-title" id="zoneModalTitle">Thêm khu vực giao hàng</h3>
             <button class="modal-close" id="closeZoneModal">&times;</button>
         </div>
         <div class="modal-body">
             <form id="zoneForm">
                 <input type="hidden" id="zoneId">
                 <div class="form-group">
-                    <label class="form-label" for="zoneName">Zone Name</label>
-                    <input type="text" class="form-input" id="zoneName" required placeholder="e.g. Central Delhi">
+                    <label class="form-label" for="zoneName">Tên khu vực</label>
+                    <input type="text" class="form-input" id="zoneName" required placeholder="Ví dụ: Quận 1">
                 </div>
                 <div class="form-group mt-3">
-                    <label class="form-label" for="zonePincodes">Serviceable Pincodes (comma separated)</label>
-                    <textarea class="form-textarea" id="zonePincodes" required placeholder="e.g. 110001, 110002"></textarea>
+                    <label class="form-label" for="zonePincodes">Mã bưu chính phục vụ (phân cách bằng dấu phẩy)</label>
+                    <textarea class="form-textarea" id="zonePincodes" required placeholder="Ví dụ: 700000, 700001"></textarea>
                 </div>
                 <div class="grid-stats grid-stats--auto mt-3">
                     <div class="form-group">
-                        <label class="form-label" for="zoneFee">Delivery Fee (₹)</label>
+                        <label class="form-label" for="zoneFee">Phí giao hàng (VNĐ)</label>
                         <input type="number" class="form-input" id="zoneFee" step="0.01" value="0.00">
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="zoneMin">Min Order (₹)</label>
+                        <label class="form-label" for="zoneMin">Đơn tối thiểu (VNĐ)</label>
                         <input type="number" class="form-input" id="zoneMin" step="0.01" value="0.00">
                     </div>
                 </div>
                 <div class="form-group mt-3">
-                    <label class="form-label" for="zoneTime">Est. Delivery Time</label>
-                    <input type="text" class="form-input" id="zoneTime" value="30-45 mins">
+                        <label class="form-label" for="zoneTime">Thời gian giao dự kiến</label>
+                    <input type="text" class="form-input" id="zoneTime" value="30-45 phút">
                 </div>
                 <div class="form-group mt-3">
                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="checkbox" id="zoneActive" checked> Active & Serviceable
+                        <input type="checkbox" id="zoneActive" checked> Đang hoạt động
                     </label>
                 </div>
                 <div class="btn-group mt-3">
-                    <button type="submit" class="btn btn-primary" id="btnSaveZone">Save Zone</button>
-                    <button type="button" class="btn btn-outline" id="btnCancelZone">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btnSaveZone">Lưu khu vực</button>
+                    <button type="button" class="btn btn-outline" id="btnCancelZone">Hủy</button>
                 </div>
             </form>
         </div>

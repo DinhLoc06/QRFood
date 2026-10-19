@@ -48,7 +48,7 @@
         var all = document.createElement('button');
         all.type = 'button';
         all.className = 'chip is-active';
-        all.textContent = 'All';
+        all.textContent = 'Tất cả';
         all.addEventListener('click', function () {
             activeCat = null;
             chipsEl.querySelectorAll('.chip').forEach(function (c) {
@@ -94,7 +94,7 @@
         var list = filterItems();
         gridEl.innerHTML = '';
         if (list.length === 0) {
-            gridEl.innerHTML = '<p class="text-muted">No items match your search.</p>';
+            gridEl.innerHTML = '<p class="text-muted">Không tìm thấy món phù hợp.</p>';
             return;
         }
         list.forEach(function (it) {
@@ -150,7 +150,7 @@
                 var btnAdd = document.createElement('button');
                 btnAdd.type = 'button';
                 btnAdd.className = 'btn btn-outline btn-block';
-                btnAdd.textContent = 'Add to Cart';
+                btnAdd.textContent = 'Thêm vào giỏ';
                 btnAdd.addEventListener('click', function () {
                     setQty(id, 1);
                 });
@@ -199,7 +199,7 @@
     }
 
     function formatMoney(n) {
-        return '₹' + n.toFixed(2);
+        return Math.round(n).toLocaleString('vi-VN') + ' ₫';
     }
 
     function setQty(menuId, q) {
@@ -223,13 +223,6 @@
         var gst = Math.round(sub * (gstRate / 100) * 100) / 100;
         
         var delFee = 0;
-        if (orderType && orderType.value === 'DELIVERY') {
-            var service = localStorage.getItem('vp_service');
-            if (service) {
-                var sData = JSON.parse(service);
-                delFee = Number(sData.delivery_fee || 0);
-            }
-        }
 
         var total = Math.round((sub + gst + delFee) * 100) / 100;
         return { sub: sub, gst: gst, delivery: delFee, total: total };
@@ -275,7 +268,7 @@
                 formatMoney(Number(it.price) * qty) +
                 '</div><button type="button" class="btn btn-ghost btn-sm remove-line" data-id="' +
                 id +
-                '">Remove</button>';
+                '">Xóa</button>';
             line.appendChild(left);
             line.appendChild(right);
             cartLines.appendChild(line);
@@ -345,7 +338,7 @@
                 renderCart();
             }
         } catch (e) {
-            window.SRMS.toast(e.message || 'Could not load menu', true);
+            window.SRMS.toast(e.message || 'Không thể tải thực đơn', true);
         } finally {
             if (load) load.classList.remove('is-visible');
         }
@@ -359,13 +352,6 @@
     if (orderType) {
         orderType.addEventListener('change', function() {
             toggleOrderFields();
-            // Pre-fill modal field instead
-            var loc = localStorage.getItem('vp_address');
-            var pin = localStorage.getItem('vp_pincode');
-            if (loc && pin && document.getElementById('checkoutAddr')) {
-                document.getElementById('checkoutAddr').value = loc + ' (' + pin + ')';
-                document.getElementById('detectedLocationInfo').textContent = '📍 Delivery to your selected location: ' + pin;
-            }
             renderCart();
         });
     }
@@ -375,12 +361,12 @@
         btnPlace.addEventListener('click', function () {
             var ids = Object.keys(cart).filter(k => cart[k] > 0);
             if (ids.length === 0) {
-                window.SRMS.toast('Cart is empty', true);
+                window.SRMS.toast('Giỏ món đang trống', true);
                 return;
             }
 
             if (orderType.value === 'DINE_IN' && (!tableId || tableId.value === '0')) {
-                window.SRMS.toast('Please select a table for dine-in', true);
+                window.SRMS.toast('Vui lòng chọn bàn khi dùng tại quán', true);
                 return;
             }
 
@@ -389,15 +375,7 @@
             var stepTitle = document.getElementById('checkoutStepTitle');
             var isDineIn = orderType.value === 'DINE_IN';
             if (wrapCheckoutAddr) wrapCheckoutAddr.style.display = isDineIn ? 'none' : 'block';
-            if (stepTitle) stepTitle.textContent = isDineIn ? 'Customer Details' : 'Delivery Details';
-
-            // Pre-fill address from saved location for DELIVERY
-            var loc = localStorage.getItem('vp_address');
-            var pin = localStorage.getItem('vp_pincode');
-            if (!isDineIn && loc && pin && document.getElementById('checkoutAddr')) {
-                document.getElementById('checkoutAddr').value = loc + ' (' + pin + ')';
-                document.getElementById('detectedLocationInfo').textContent = '📍 Delivery to your selected location: ' + pin;
-            }
+            if (stepTitle) stepTitle.textContent = isDineIn ? 'Thông tin khách hàng' : 'Thông tin giao hàng';
 
             checkoutModal.classList.add('is-active');
             showStep('Address');
@@ -410,7 +388,7 @@
         var phone = document.getElementById('checkoutPhone').value.trim();
         var addr = document.getElementById('checkoutAddr').value.trim();
         if (!name || !phone || (!isDineIn && !addr)) {
-            window.SRMS.toast('Please fill all required details', true);
+            window.SRMS.toast('Vui lòng nhập đầy đủ thông tin bắt buộc', true);
             return;
         }
         showStep('Payment');
@@ -423,13 +401,13 @@
         var method = document.querySelector('input[name="paymentMethod"]:checked').value;
         var isDineIn = orderType && orderType.value === 'DINE_IN';
 
-        document.getElementById('confirmSummaryName').textContent = 'Name: ' + name;
-        document.getElementById('confirmSummaryPhone').textContent = 'Phone: ' + phone;
+        document.getElementById('confirmSummaryName').textContent = 'Họ tên: ' + name;
+        document.getElementById('confirmSummaryPhone').textContent = 'Điện thoại: ' + phone;
         var summaryAddr = document.getElementById('confirmSummaryAddr');
         if (isDineIn) {
-            summaryAddr.textContent = 'Table: ' + (tableId ? tableId.options[tableId.selectedIndex].text.trim() : 'N/A');
+            summaryAddr.textContent = 'Bàn: ' + (tableId ? tableId.options[tableId.selectedIndex].text.trim() : 'Không có');
         } else {
-            summaryAddr.textContent = 'Address: ' + addr;
+            summaryAddr.textContent = 'Địa chỉ: ' + addr;
         }
 
         if (method === 'UPI') {
@@ -445,7 +423,7 @@
     document.getElementById('btnFinalConfirm')?.addEventListener('click', async () => {
         var btn = document.getElementById('btnFinalConfirm');
         btn.disabled = true;
-        btn.textContent = 'Processing...';
+        btn.textContent = 'Đang xử lý...';
 
         var lines = Object.keys(cart).map(k => ({ menu_item_id: Number(k), quantity: cart[k] }));
         var method = document.querySelector('input[name="paymentMethod"]:checked').value;
@@ -471,13 +449,13 @@
                 renderGrid();
                 showStep('Success');
             } else {
-                window.SRMS.toast(res.error || 'Order failed. Please try again.', true);
+                window.SRMS.toast(res.error || 'Đặt món không thành công. Vui lòng thử lại.', true);
             }
         } catch (err) {
-            window.SRMS.toast(err.message || 'Something went wrong. Please try again.', true);
+            window.SRMS.toast(err.message || 'Đã xảy ra lỗi. Vui lòng thử lại.', true);
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Confirm Order';
+            btn.textContent = 'Xác nhận đặt món';
         }
     });
 

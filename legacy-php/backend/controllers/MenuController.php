@@ -95,15 +95,25 @@ final class MenuController
             json_response(['success' => false, 'error' => 'Invalid id'], 400);
         }
         $row = MenuItem::find($id);
-        if ($row && !empty($row['image_path'])) {
+        if (!$row) {
+            json_response(['success' => false, 'error' => 'Menu item not found'], 404);
+        }
+        $st = \App\Models\Database::pdo()->prepare('SELECT COUNT(*) FROM order_items WHERE menu_item_id = ?');
+        $st->execute([$id]);
+        if ((int) $st->fetchColumn() > 0) {
+            MenuItem::deactivate($id);
+            json_response(['success' => true, 'archived' => true]);
+        }
+
+        MenuItem::delete($id);
+        if (!empty($row['image_path'])) {
             $dir = rtrim((string) app_config('upload_dir'), '/\\');
             $full = $dir . DIRECTORY_SEPARATOR . basename((string) $row['image_path']);
             if (is_file($full)) {
                 @unlink($full);
             }
         }
-        MenuItem::delete($id);
-        json_response(['success' => true]);
+        json_response(['success' => true, 'archived' => false]);
     }
 
     public function apiSaveCategory(): void

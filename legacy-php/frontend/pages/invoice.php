@@ -54,8 +54,8 @@ $doneLabel = order_completed_label($order);
                             <tr>
                                 <td><?= e((string) ($li['item_name'] ?? '')) ?></td>
                                 <td><?= (int) $li['quantity'] ?></td>
-                                <td>₹<?= number_format((float) $li['unit_price'], 2) ?></td>
-                                <td>₹<?= number_format((float) $li['line_total'], 2) ?></td>
+                                <td><?= number_format((float) $li['unit_price'], 0, ',', '.') ?> ₫</td>
+                                <td><?= number_format((float) $li['line_total'], 0, ',', '.') ?> ₫</td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -63,14 +63,14 @@ $doneLabel = order_completed_label($order);
             </div>
 
             <div style="margin-top:1rem;max-width:280px;margin-left:auto;font-size:0.95rem;">
-                <div class="cart-summary-row"><span>Subtotal</span><span>₹<?= number_format((float) $order['subtotal'], 2) ?></span></div>
+                <div class="cart-summary-row"><span>Subtotal</span><span><?= number_format((float) $order['subtotal'], 0, ',', '.') ?> ₫</span></div>
                 <div class="cart-summary-row">
                     <span>GST (<?= e((string) $order['gst_rate']) ?>%)</span>
-                    <span>₹<?= number_format((float) $order['gst_amount'], 2) ?></span>
+                    <span><?= number_format((float) $order['gst_amount'], 0, ',', '.') ?> ₫</span>
                 </div>
                 <div class="cart-summary-row cart-summary-total" style="margin-top:0.5rem;padding-top:0.5rem;border-top:2px solid var(--border);">
                     <span>Grand total</span>
-                    <span>₹<?= number_format((float) $order['total'], 2) ?></span>
+                    <span><?= number_format((float) $order['total'], 0, ',', '.') ?> ₫</span>
                 </div>
             </div>
         </div>

@@ -61,7 +61,7 @@ require dirname(__DIR__) . '/partials/app_shell_start.php';
                     <div class="vp-dish-body">
                         <h3 class="vp-dish-name"><?= e($item['name']) ?></h3>
                         <p class="vp-dish-cat"><?= e($item['category_name'] ?? '') ?></p>
-                        <p class="vp-dish-price">₹<?= number_format((float) $item['price'], 2) ?></p>
+                        <p class="vp-dish-price"><?= number_format((float) $item['price'], 0, ',', '.') ?> ₫</p>
                         <a href="<?= e(base_url('menu')) ?>" class="btn btn-outline btn-block">Add on menu</a>
                     </div>
                 </article>

@@ -56,17 +56,17 @@
                 return (
                     '<tr data-cat="' +
                     c.id +
-                    '"><td data-label="Name">' +
+                    '"><td data-label="Tên">' +
                     escapeHtml(String(c.name)) +
                     '</td><td data-label="Sort">' +
                     Number(c.sort_order) +
-                    '</td><td data-label="Actions" class="no-print"><div class="btn-group">' +
+                    '</td><td data-label="Thao tác" class="no-print"><div class="btn-group">' +
                     '<button type="button" class="btn btn-outline btn-sm cat-edit" data-id="' +
                     c.id +
-                    '">Edit</button>' +
+                    '">Sửa</button>' +
                     '<button type="button" class="btn btn-danger btn-sm cat-del" data-id="' +
                     c.id +
-                    '">Delete</button></div></td></tr>'
+                    '">Xóa</button></div></td></tr>'
                 );
             })
             .join('');
@@ -84,7 +84,7 @@
         });
         catBody.querySelectorAll('.cat-del').forEach(function (b) {
             b.addEventListener('click', async function () {
-                if (!confirm('Delete this category?')) return;
+                if (!confirm('Bạn có chắc muốn xóa danh mục này?')) return;
                 var id = Number(b.getAttribute('data-id'));
                 try {
                     await window.SRMS.apiPostJson('api/category-delete', { id: id });
@@ -94,9 +94,9 @@
                     fillCategorySelect();
                     renderCategories();
                     renderItems();
-                    window.SRMS.toast('Category deleted');
+                    window.SRMS.toast('Đã xóa danh mục');
                 } catch (e) {
-                    window.SRMS.toast(e.message || 'Cannot delete', true);
+                    window.SRMS.toast(e.message || 'Không thể xóa danh mục', true);
                 }
             });
         });
@@ -109,23 +109,23 @@
                 return (
                     '<tr data-item="' +
                     m.id +
-                    '"><td data-label="Item"><strong>' +
+                    '"><td data-label="Món ăn"><strong>' +
                     escapeHtml(String(m.name)) +
                     '</strong><br><span class="text-muted">' +
                     escapeHtml(String(m.description || '').slice(0, 80)) +
-                    '</span></td><td data-label="Category">' +
+                    '</span></td><td data-label="Danh mục">' +
                     escapeHtml(String(m.category_name || '')) +
-                    '</td><td data-label="Price">₹' +
-                    Number(m.price).toFixed(2) +
-                    '</td><td data-label="Active">' +
-                    (m.is_active ? 'Yes' : 'No') +
-                    '</td><td data-label="Actions" class="no-print"><div class="btn-group">' +
+                    '</td><td data-label="Giá">' +
+                    Math.round(Number(m.price)).toLocaleString('vi-VN') + ' ₫' +
+                    '</td><td data-label="Hiển thị">' +
+                    (m.is_active ? 'Có' : 'Không') +
+                    '</td><td data-label="Thao tác" class="no-print"><div class="btn-group">' +
                     '<button type="button" class="btn btn-outline btn-sm item-edit" data-id="' +
                     m.id +
-                    '">Edit</button>' +
+                    '">Sửa</button>' +
                     '<button type="button" class="btn btn-danger btn-sm item-del" data-id="' +
                     m.id +
-                    '">Delete</button></div></td></tr>'
+                    '">Xóa</button></div></td></tr>'
                 );
             })
             .join('');
@@ -159,17 +159,24 @@
         });
         itemBody.querySelectorAll('.item-del').forEach(function (b) {
             b.addEventListener('click', async function () {
-                if (!confirm('Delete this menu item?')) return;
+                if (!confirm('Bạn có chắc muốn xóa món này?')) return;
                 var id = Number(b.getAttribute('data-id'));
                 try {
-                    await window.SRMS.apiPostJson('api/menu-delete', { id: id });
-                    items = items.filter(function (x) {
-                        return Number(x.id) !== id;
-                    });
+                    var result = await window.SRMS.apiPostJson('api/menu-delete', { id: id });
+                    if (result.archived) {
+                        items = items.map(function (x) {
+                            if (Number(x.id) === id) x.is_active = 0;
+                            return x;
+                        });
+                    } else {
+                        items = items.filter(function (x) {
+                            return Number(x.id) !== id;
+                        });
+                    }
                     renderItems();
-                    window.SRMS.toast('Item deleted');
+                    window.SRMS.toast(result.archived ? 'Món đã có trong đơn cũ nên được chuyển sang ẩn' : 'Đã xóa món');
                 } catch (e) {
-                    window.SRMS.toast(e.message || 'Delete failed', true);
+                    window.SRMS.toast(e.message || 'Không thể xóa món', true);
                 }
             });
         });
@@ -189,7 +196,7 @@
         var text = await res.text();
         var data = JSON.parse(text || '{}');
         if (!res.ok || !data.success) {
-            throw new Error(data.error || 'Upload failed');
+            throw new Error(data.error || 'Không thể tải ảnh lên');
         }
         return data.path;
     }
@@ -208,11 +215,11 @@
                 var res = await window.SRMS.apiPostJson('api/category-save', payload);
                 if (res.id) {
                     await reloadAll();
-                    window.SRMS.toast('Category saved');
+                    window.SRMS.toast('Đã lưu danh mục');
                     if (catReset) catReset.click();
                 }
             } catch (err) {
-                window.SRMS.toast(err.message || 'Save failed', true);
+                window.SRMS.toast(err.message || 'Không thể lưu dữ liệu', true);
             }
         });
     }
@@ -246,10 +253,10 @@
                 }
                 await window.SRMS.apiPostJson('api/menu-save', payload);
                 await reloadAll();
-                window.SRMS.toast('Menu item saved');
+                window.SRMS.toast('Đã lưu món');
                 if (itemReset) itemReset.click();
             } catch (err) {
-                window.SRMS.toast(err.message || 'Save failed', true);
+                window.SRMS.toast(err.message || 'Không thể lưu món', true);
             }
         });
     }

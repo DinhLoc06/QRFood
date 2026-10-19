@@ -53,7 +53,7 @@
             var err =
                 data && typeof data === 'object' && data.error
                     ? String(data.error)
-                    : 'Request failed (' + res.status + ')';
+                    : 'Yêu cầu không thành công (' + res.status + ')';
             throw new Error(err);
         }
         return data;
