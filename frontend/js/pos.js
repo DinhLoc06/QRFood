@@ -10,20 +10,14 @@
     var searchEl = document.getElementById('menuSearch');
     var chipsEl = document.getElementById('categoryChips');
     var gridEl = document.getElementById('menuGrid');
-    var orderType = document.getElementById('orderType');
-    var wrapTable = document.getElementById('wrapTable');
-    var wrapDelivery = document.getElementById('wrapDelivery');
     var tableId = document.getElementById('tableId');
     var custName = document.getElementById('custName');
     var custPhone = document.getElementById('custPhone');
-    var custAddr = document.getElementById('custAddr');
     var cartLines = document.getElementById('cartLines');
     var cartEmpty = document.getElementById('cartEmpty');
     var cartSummary = document.getElementById('cartSummary');
     var sumSub = document.getElementById('sumSub');
     var sumGst = document.getElementById('sumGst');
-    var sumDelivery = document.getElementById('sumDelivery');
-    var rowDeliveryFee = document.getElementById('rowDeliveryFee');
     var sumTotal = document.getElementById('sumTotal');
     var btnPlace = document.getElementById('btnPlace');
 
@@ -125,7 +119,7 @@
             } else {
                 visual = document.createElement('div');
                 visual.className = 'menu-card-placeholder';
-                visual.textContent = 'Velvet Plate';
+                visual.textContent = 'SEOUL';
             }
             wrap.appendChild(visual);
             var body = document.createElement('div');
@@ -222,10 +216,8 @@
         sub = Math.round(sub * 100) / 100;
         var gst = Math.round(sub * (gstRate / 100) * 100) / 100;
         
-        var delFee = 0;
-
-        var total = Math.round((sub + gst + delFee) * 100) / 100;
-        return { sub: sub, gst: gst, delivery: delFee, total: total };
+        var total = Math.round((sub + gst) * 100) / 100;
+        return { sub: sub, gst: gst, total: total };
     }
 
     function renderCart() {
@@ -285,29 +277,13 @@
         sumSub.textContent = formatMoney(t.sub);
         sumGst.textContent = formatMoney(t.gst);
         
-        if (rowDeliveryFee && sumDelivery) {
-            if (t.delivery > 0) {
-                rowDeliveryFee.hidden = false;
-                sumDelivery.textContent = formatMoney(t.delivery);
-            } else {
-                rowDeliveryFee.hidden = true;
-            }
-        }
-
         sumTotal.textContent = formatMoney(t.total);
-    }
-
-    function toggleOrderFields() {
-        var del = orderType && orderType.value === 'DELIVERY';
-        if (wrapTable) wrapTable.hidden = !!del;
-        if (wrapDelivery) wrapDelivery.hidden = !del;
     }
 
     // Modal Control
     var checkoutModal = document.getElementById('checkoutModal');
     if (checkoutModal) {
         document.getElementById('closeCheckoutModal').onclick = closeCheckout;
-        document.getElementById('btnCancelZone')?.addEventListener('click', closeCheckout);
     }
 
     function closeCheckout() {
@@ -349,14 +325,6 @@
             renderGrid();
         });
     }
-    if (orderType) {
-        orderType.addEventListener('change', function() {
-            toggleOrderFields();
-            renderCart();
-        });
-    }
-    toggleOrderFields();
-
     if (btnPlace) {
         btnPlace.addEventListener('click', function () {
             var ids = Object.keys(cart).filter(k => cart[k] > 0);
@@ -365,17 +333,10 @@
                 return;
             }
 
-            if (orderType.value === 'DINE_IN' && (!tableId || tableId.value === '0')) {
+            if (!tableId || tableId.value === '0') {
                 window.SRMS.toast('Vui lòng chọn bàn khi dùng tại quán', true);
                 return;
             }
-
-            // Adjust checkout modal for order type
-            var wrapCheckoutAddr = document.getElementById('wrapCheckoutAddr');
-            var stepTitle = document.getElementById('checkoutStepTitle');
-            var isDineIn = orderType.value === 'DINE_IN';
-            if (wrapCheckoutAddr) wrapCheckoutAddr.style.display = isDineIn ? 'none' : 'block';
-            if (stepTitle) stepTitle.textContent = isDineIn ? 'Thông tin khách hàng' : 'Thông tin giao hàng';
 
             checkoutModal.classList.add('is-active');
             showStep('Address');
@@ -383,11 +344,9 @@
     }
 
     document.getElementById('btnNextToPayment')?.addEventListener('click', () => {
-        var isDineIn = orderType && orderType.value === 'DINE_IN';
         var name = document.getElementById('checkoutName').value.trim();
         var phone = document.getElementById('checkoutPhone').value.trim();
-        var addr = document.getElementById('checkoutAddr').value.trim();
-        if (!name || !phone || (!isDineIn && !addr)) {
+        if (!name || !phone) {
             window.SRMS.toast('Vui lòng nhập đầy đủ thông tin bắt buộc', true);
             return;
         }
@@ -397,25 +356,11 @@
     document.getElementById('btnNextToConfirm')?.addEventListener('click', () => {
         var name = document.getElementById('checkoutName').value.trim();
         var phone = document.getElementById('checkoutPhone').value.trim();
-        var addr = document.getElementById('checkoutAddr').value.trim();
-        var method = document.querySelector('input[name="paymentMethod"]:checked').value;
-        var isDineIn = orderType && orderType.value === 'DINE_IN';
 
         document.getElementById('confirmSummaryName').textContent = 'Họ tên: ' + name;
         document.getElementById('confirmSummaryPhone').textContent = 'Điện thoại: ' + phone;
         var summaryAddr = document.getElementById('confirmSummaryAddr');
-        if (isDineIn) {
-            summaryAddr.textContent = 'Bàn: ' + (tableId ? tableId.options[tableId.selectedIndex].text.trim() : 'Không có');
-        } else {
-            summaryAddr.textContent = 'Địa chỉ: ' + addr;
-        }
-
-        if (method === 'UPI') {
-            document.getElementById('upiQrSection').style.display = 'block';
-            document.getElementById('upiAmount').textContent = lineTotals().total;
-        } else {
-            document.getElementById('upiQrSection').style.display = 'none';
-        }
+        summaryAddr.textContent = 'Bàn: ' + (tableId ? tableId.options[tableId.selectedIndex].text.trim() : 'Không có');
 
         showStep('Confirm');
     });
@@ -426,24 +371,19 @@
         btn.textContent = 'Đang xử lý...';
 
         var lines = Object.keys(cart).map(k => ({ menu_item_id: Number(k), quantity: cart[k] }));
-        var method = document.querySelector('input[name="paymentMethod"]:checked').value;
-        var isDineIn = orderType.value === 'DINE_IN';
-
         var payload = {
-            type: orderType.value,
+            type: 'DINE_IN',
             cart: lines,
-            table_id: isDineIn ? Number(tableId.value) : null,
+            table_id: Number(tableId.value),
             customer_name: document.getElementById('checkoutName').value.trim(),
-            customer_phone: document.getElementById('checkoutPhone').value.trim(),
-            delivery_address: isDineIn ? null : document.getElementById('checkoutAddr').value.trim(),
-            payment_method: method
+            customer_phone: document.getElementById('checkoutPhone').value.trim()
         };
 
         try {
             var res = await window.SRMS.apiPostJson('api/order-place', payload);
             if (res.success) {
                 document.getElementById('successOrderId').textContent = '#' + (res.order_code || '---');
-                document.getElementById('successPayment').textContent = method;
+                document.getElementById('successPayment').textContent = 'Tại quầy';
                 cart = {};
                 renderCart();
                 renderGrid();

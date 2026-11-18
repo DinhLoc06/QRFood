@@ -1,20 +1,51 @@
 <%- include('../partials/head') %><% if (!minimalLayout) { %><div class="app-shell"><%- include('../partials/nav') %><% } %>
-<main id="main-content" class="main--fullbleed home-page">
+<main id="main-content" class="main--fullbleed home-page seoul-home">
     <section class="home-hero" aria-labelledby="home-title">
         <div class="home-hero__content">
-            <p class="eyebrow">Từ vườn xanh đến bàn ăn</p>
-            <h1 id="home-title">Thuần tự nhiên.<br><em>Trọn vị Việt.</em></h1>
-            <p class="home-hero__lead">Một hành trình ẩm thực dịu lành từ rau thơm, nông sản theo mùa và những công thức Việt được gìn giữ bằng cả sự tử tế.</p>
-            <div class="home-hero__actions"><a href="<%- e(appUrl('menu')) %>" class="btn btn-primary btn-lg">Xem thực đơn</a><a href="#featured" class="text-link">Khám phá món ngon <span aria-hidden="true">→</span></a></div>
-            <ul class="home-trust" aria-label="Cam kết của nhà hàng"><li><strong>100%</strong><span>Nguyên liệu tươi</span></li><li><strong>Theo mùa</strong><span>Chọn lọc mỗi ngày</span></li><li><strong>4.9/5</strong><span>Khách hàng yêu thích</span></li></ul>
+            <p class="eyebrow">Ẩm thực Hàn Quốc · Nóng hổi tại bàn</p>
+            <h1 id="home-title">Bùng vị cay.<br><em>Chuẩn chất Seoul.</em></h1>
+            <p class="home-hero__lead">Tô mì kim chi nghi ngút khói, nước dùng đậm đà và món ngon cho mọi cuộc hẹn. Chọn cấp độ cay của bạn, gọi món ngay tại bàn.</p>
+            <div class="home-hero__actions">
+                <a href="<%- e(appUrl('menu')) %>" class="btn btn-primary btn-lg">Xem thực đơn</a>
+                <a href="#featured" class="text-link">Khám phá món nổi bật <span aria-hidden="true">→</span></a>
+            </div>
+            <ul class="home-trust" aria-label="Điểm nổi bật">
+                <li><strong>7 cấp độ</strong><span>Thử sức vị cay</span></li>
+                <li><strong>9 nhóm món</strong><span>Ăn là mê</span></li>
+                <li><strong>QR tại bàn</strong><span>Gọi món thật nhanh</span></li>
+            </ul>
         </div>
-        <div class="home-hero__visual" aria-hidden="true"><span class="hero-stamp">Tươi lành<br>mỗi ngày</span></div>
+        <div class="home-hero__visual" aria-hidden="true"><span class="hero-stamp">CAY<br>ĐÚNG<br>ĐIỆU</span></div>
     </section>
+
+    <section class="seoul-intro" aria-label="Khám phá thực đơn">
+        <div><span class="seoul-intro__number">01</span><h2>Mì cay 7 cấp độ</h2><p>Từ cay nhẹ đến bùng nổ, mỗi tô mì được nấu nóng khi bạn gọi.</p></div>
+        <div><span class="seoul-intro__number">02</span><h2>Món Hàn hấp dẫn</h2><p>Tokbokki, gà cay phô mai, lẩu và nhiều lựa chọn để ăn cùng bạn bè.</p></div>
+        <div><span class="seoul-intro__number">03</span><h2>Gọi món tại bàn</h2><p>Quét mã QR, chọn bàn và gửi món trực tiếp đến bếp.</p></div>
+    </section>
+
     <section class="home-section" id="featured" aria-labelledby="featured-title">
-        <div class="section-heading"><div><p class="eyebrow">Mùa nào thức ấy</p><h2 id="featured-title">Vị ngon từ thiên nhiên</h2></div><a href="<%- e(appUrl('menu')) %>" class="text-link">Khám phá thực đơn <span aria-hidden="true">→</span></a></div>
-        <div class="home-menu-grid"><% for (const item of (featured || []).slice(0, 6)) { %><article class="home-dish-card"><div class="home-dish-card__media"><% if (item.image_url) { %><img src="<%- e(item.image_url) %>" alt="<%- e(item.name) %>" loading="lazy" width="480" height="360"><% } else { %><div class="food-placeholder"><span>VP</span></div><% } %><span class="dish-category"><%- e(item.category_name || 'Món ngon') %></span></div><div class="home-dish-card__body"><div><h3><%- e(item.name) %></h3><p><%- e(item.description || 'Được chế biến tươi mới khi bạn gọi món.') %></p></div><div class="dish-card__footer"><strong><%= Math.round(Number(item.price)).toLocaleString('vi-VN') %> ₫</strong><a href="<%- e(appUrl('menu')) %>" aria-label="Chọn món <%- e(item.name) %>">Chọn món</a></div></div></article><% } %></div>
+        <div class="section-heading"><div><p class="eyebrow">Món ngon được yêu thích</p><h2 id="featured-title">Hôm nay ăn gì?</h2></div><a href="<%- e(appUrl('menu')) %>" class="text-link">Xem toàn bộ thực đơn <span aria-hidden="true">→</span></a></div>
+        <div class="home-menu-grid">
+            <% for (const item of (featured || []).slice(0, 6)) { %>
+                <article class="home-dish-card">
+                    <div class="home-dish-card__media">
+                        <% if (item.image_url) { %><img src="<%- e(item.image_url) %>" alt="<%- e(item.name) %>" loading="lazy" width="480" height="360"><% } else { %><div class="food-placeholder"><span>SEOUL</span></div><% } %>
+                        <span class="dish-category"><%- e(item.category_name || 'Món ngon') %></span>
+                    </div>
+                    <div class="home-dish-card__body"><div><h3><%- e(item.name) %></h3><p><%- e(item.description || 'Món ngon chuẩn vị Hàn, phục vụ nóng tại bàn.') %></p></div><div class="dish-card__footer"><strong><%= Math.round(Number(item.price)).toLocaleString('vi-VN') %> ₫</strong><a href="<%- e(appUrl('menu')) %>" aria-label="Chọn món <%- e(item.name) %>">Chọn món</a></div></div>
+                </article>
+            <% } %>
+        </div>
     </section>
-    <section class="home-experience"><div class="home-experience__image"><img src="<%- e(assetUrl('assets/uploads/hero.jpg')) %>" alt="Không gian bàn ăn ấm cúng tại Velvet Plate" loading="lazy" width="960" height="720"></div><div class="home-experience__content"><p class="eyebrow">Triết lý của chúng tôi</p><h2>Ăn xanh hơn.<br>Sống dịu lành hơn.</h2><p>Mỗi món ăn bắt đầu từ nguồn nguyên liệu rõ ràng, được nấu vừa đủ để giữ lại hương vị tự nhiên. Chúng tôi ưu tiên nông sản địa phương, giảm lãng phí và tạo nên những bữa ăn tốt cho cả bạn lẫn môi trường.</p><div class="experience-points"><div><span>01</span><strong>Nông sản địa phương</strong></div><div><span>02</span><strong>Nấu mới theo đơn</strong></div><div><span>03</span><strong>Giảm thiểu lãng phí</strong></div></div></div></section>
-    <section class="home-cta"><div><p class="eyebrow">Một bữa ăn xanh đang chờ bạn</p><h2>Chọn điều tươi lành<br>cho hôm nay.</h2></div><a href="<%- e(appUrl('menu')) %>" class="btn btn-light btn-lg">Khám phá thực đơn</a></section>
+
+    <section class="home-experience seoul-spice" aria-labelledby="spice-title">
+        <div class="home-experience__image"><img src="<%- e(assetUrl('assets/seoul-hotpot.png')) %>" alt="Nồi lẩu cay kiểu Hàn nóng hổi" loading="lazy" width="960" height="720"></div>
+        <div class="home-experience__content"><p class="eyebrow">Thử thách vị giác</p><h2 id="spice-title">Bạn chọn<br>cấp độ mấy?</h2><p>Cấp 1 dịu nhẹ để bắt đầu, cấp 7 dành cho tín đồ cay thực thụ. Hãy nói với nhân viên mức cay mong muốn khi đến quán.</p><div class="spice-levels" aria-label="Bảy cấp độ cay"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></div><a href="<%- e(appUrl('menu')) %>" class="btn btn-primary">Chọn món mì cay</a></div>
+    </section>
+
+    <section class="seoul-categories" aria-labelledby="categories-title"><div class="section-heading"><div><p class="eyebrow">Thêm món, thêm vui</p><h2 id="categories-title">Đậm vị trong từng lựa chọn</h2></div></div><div class="seoul-categories__grid"><a href="<%- e(appUrl('menu')) %>" class="seoul-category-card"><img src="<%- e(assetUrl('assets/seoul-tteokbokki.png')) %>" alt="Tokbokki xốt cay" loading="lazy" width="520" height="520"><span>Tokbokki <span aria-hidden="true">↗</span></span></a><a href="<%- e(appUrl('menu')) %>" class="seoul-category-card"><img src="<%- e(assetUrl('assets/seoul-chicken.png')) %>" alt="Gà cay phô mai" loading="lazy" width="520" height="520"><span>Món gà Seoul <span aria-hidden="true">↗</span></span></a><a href="<%- e(appUrl('menu')) %>" class="seoul-category-card"><img src="<%- e(assetUrl('assets/seoul-hotpot.png')) %>" alt="Lẩu cay kiểu Hàn" loading="lazy" width="520" height="520"><span>Các loại lẩu <span aria-hidden="true">↗</span></span></a></div></section>
+
+    <section class="home-cta"><div><p class="eyebrow">Hẹn nhau một bữa thật cay</p><h2>Chọn món ngon.<br>Gọi ngay tại bàn.</h2></div><a href="<%- e(appUrl('menu')) %>" class="btn btn-light btn-lg">Đến thực đơn</a></section>
 </main>
 <%- include('../partials/footer') %>

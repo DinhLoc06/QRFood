@@ -158,7 +158,6 @@ h1, h2, h3, h4 { letter-spacing: -.035em; }
 }
 
 @media (max-width: 560px) {
-    .location-selector { display: none; }
     .home-hero { min-height: auto; }
     .home-trust li { min-width: 33%; padding: 0 .65rem; }
     .home-trust strong { font-size: 1rem; }
@@ -2536,50 +2535,6 @@ main#main-content.main--fullbleed {
     overflow-y: auto;
 }
 
-.location-search-wrapper {
-    position: relative;
-    margin-bottom: 1.25rem;
-}
-
-.location-search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-}
-
-.location-search-input {
-    width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.75rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--bg-card);
-    color: var(--text);
-    font-family: var(--font-body);
-}
-
-.detect-location-btn {
-    width: 100%;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    background: var(--accent-muted);
-    color: var(--accent);
-    border: 1px dashed var(--accent);
-    border-radius: var(--radius);
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 1.5rem;
-}
-
-.detect-location-btn:hover {
-    background: var(--accent);
-    color: white;
-}
-
 .saved-addresses-title {
     font-size: 0.85rem;
     text-transform: uppercase;
@@ -2842,7 +2797,6 @@ main#main-content.main--fullbleed {
 
 .site-header { border-bottom-color: color-mix(in srgb, var(--border) 70%, transparent); box-shadow: 0 10px 40px rgba(23,61,43,.04); }
 .brand-mark { background: var(--gradient-brand); }
-.location-selector { background: var(--accent-muted); border-color: transparent; }
 .nav-link.is-active::after { background: var(--accent); }
 .btn-primary { box-shadow: 0 10px 24px rgba(23,61,43,.16); }
 .btn-outline { border-color: var(--border-strong); }
@@ -3101,32 +3055,6 @@ main#main-content.main--fullbleed {
     height: var(--header-h);
 }
 
-.location-selector {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--bg-elevated);
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    max-width: 200px;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    transition: var(--transition);
-}
-
-.location-selector:hover {
-    border-color: var(--accent);
-}
-
-.location-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
-    max-width: 140px;
-}
-
 @media (max-width: 1099px) {
     .header-inner {
         padding: 0.5rem 1rem;
@@ -3139,15 +3067,6 @@ main#main-content.main--fullbleed {
 
     .brand-text {
         font-size: 1.15rem;
-    }
-
-    .location-selector {
-        font-size: 0.8rem;
-        max-width: 140px;
-    }
-
-    .location-text {
-        max-width: 100px;
     }
 
 }

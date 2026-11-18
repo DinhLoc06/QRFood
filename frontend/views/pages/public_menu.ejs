@@ -1,9 +1,9 @@
 <%- include('../partials/head') %><% if (!minimalLayout) { %><div class="app-shell"><%- include('../partials/nav') %><% } %>
 <main id="main-content" class="menu-page-wrap">
     <header class="page-menu-hero">
-        <p class="eyebrow">Chọn món thật dễ</p>
-        <h1 class="page-menu-title">Thực đơn hôm nay</h1>
-        <p class="page-menu-sub">Tìm món yêu thích, chọn số lượng và đặt món chỉ trong vài bước.</p>
+        <p class="eyebrow">Mì cay 7 cấp độ · Món Hàn nóng hổi</p>
+        <h1 class="page-menu-title">Thực đơn Seoul</h1>
+        <p class="page-menu-sub">Từ mì kim chi, mì lẩu Thái đến tokbokki và gà cay. Chọn món rồi đặt ngay tại bàn.</p>
     </header>
 
     <div class="menu-toolbar">
@@ -22,13 +22,7 @@
             <h2 class="cart-title-lux text-center"
                 style="font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 1px; color: var(--accent);">
                 Giỏ món của bạn</h2>
-            <div class="form-group" style="padding: 1rem 1.25rem 0.5rem;">
-                <label class="form-label" for="orderType">Hình thức nhận món</label>
-                <select class="form-select" id="orderType">
-                    <option value="DINE_IN">Dùng tại quán</option>
-                    <option value="DELIVERY">Giao tận nơi</option>
-                </select>
-            </div>
+            <p class="text-muted" style="padding: 1rem 1.25rem 0.5rem; margin:0;">Đặt món dùng tại quán</p>
 
             <div id="cartEmpty" class="cart-empty-state">
                 <img src="<%- e(appUrl('frontend/assets/empty-tray.png')) %>" alt="Giỏ món đang trống"
@@ -48,9 +42,6 @@
                         </div>
                         <div class="cart-summary-row">
                             <span>Thuế (<span id="gstPctLabel">18</span>%)</span><span id="sumGst">0 ₫</span>
-                        </div>
-                        <div class="cart-summary-row" id="rowDeliveryFee" hidden>
-                            <span>Phí giao hàng</span><span id="sumDelivery">0 ₫</span>
                         </div>
                         <div class="cart-summary-total">
                             <span>Tổng cộng</span><span id="sumTotal">0 ₫</span>
@@ -87,7 +78,7 @@
             <button class="modal-close" id="closeCheckoutModal">&times;</button>
         </div>
         <div class="modal-body">
-            <!-- Step 1: Address (Only for Delivery) -->
+            <!-- Step 1: Customer details -->
             <div id="stepAddress" class="checkout-step">
                 <h4 class="mb-1">Thông tin khách hàng</h4>
                 <div class="form-group">
@@ -98,34 +89,13 @@
                     <label class="form-label">Số điện thoại</label>
                     <input type="tel" class="form-input" id="checkoutPhone" placeholder="Nhập số điện thoại">
                 </div>
-                <div id="wrapCheckoutAddr">
-                    <div class="form-group">
-                        <label class="form-label">Địa chỉ giao hàng</label>
-                        <textarea class="form-textarea" id="checkoutAddr" placeholder="Nhập địa chỉ đầy đủ..."></textarea>
-                    </div>
-                </div>
                 <button class="btn btn-primary btn-block" id="btnNextToPayment">Tiếp tục thanh toán</button>
             </div>
 
             <!-- Step 2: Payment -->
             <div id="stepPayment" class="checkout-step" style="display:none">
-                <h4 class="mb-1">Chọn phương thức thanh toán</h4>
-                <div class="payment-options">
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="COD" checked>
-                        <div class="payment-option-card">
-                            <span class="payment-option-icon">💵</span>
-                            <span>Thanh toán khi nhận món</span>
-                        </div>
-                    </label>
-                    <label class="payment-option">
-                        <input type="radio" name="paymentMethod" value="UPI">
-                        <div class="payment-option-card">
-                            <span class="payment-option-icon">📱</span>
-                            <span>Chuyển khoản bằng mã QR</span>
-                        </div>
-                    </label>
-                </div>
+                <h4 class="mb-1">Thanh toán tại quầy</h4>
+                <p class="text-muted">Bạn thanh toán với nhân viên sau khi món ăn được phục vụ.</p>
                 <button class="btn btn-primary btn-block mt-3" id="btnNextToConfirm">Kiểm tra đơn hàng</button>
             </div>
 
@@ -136,16 +106,6 @@
                     <p id="confirmSummaryName"></p>
                     <p id="confirmSummaryPhone"></p>
                     <p id="confirmSummaryAddr" class="mb-0"></p>
-                </div>
-
-                <!-- UPI QR Section -->
-                <div id="upiQrSection" style="display:none; text-align:center; margin-bottom:1.5rem;">
-                    <p class="text-muted mb-2">Quét mã QR để thanh toán <span id="upiAmount">0</span> ₫</p>
-                    <div id="upiQrPlaceholder"
-                        style="width:180px; height:180px; background:#fff; margin:0 auto; padding:10px; border-radius:10px; border:1px solid #ddd">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=velvetplate@upi"
-                            alt="QR Code" style="width:160px; height:160px">
-                    </div>
                 </div>
 
                 <button class="btn btn-primary btn-block" id="btnFinalConfirm">Xác nhận đặt món</button>

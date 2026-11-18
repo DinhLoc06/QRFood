@@ -16,10 +16,6 @@
     var sumSub = document.getElementById('sumSub');
     var sumGst = document.getElementById('sumGst');
     var sumTotal = document.getElementById('sumTotal');
-    var sumDelivery = document.getElementById('sumDelivery');
-    var rowDeliveryFee = document.getElementById('rowDeliveryFee');
-    var orderType = document.getElementById('orderType');
-    var wrapTable = document.getElementById('wrapTable');
     var btnPlace = document.getElementById('btnPlace');
     var selectedTableInput = document.getElementById('selectedTable');
     var tableError = document.getElementById('tableError');
@@ -138,7 +134,7 @@
             } else {
                 img = document.createElement('div');
                 img.className = 'menu-card-placeholder';
-                img.textContent = 'Velvet Plate';
+                img.textContent = 'SEOUL';
             }
             var body = document.createElement('div');
             body.className = 'menu-card-body';
@@ -276,10 +272,8 @@
         sub = Math.round(sub * 100) / 100;
         var gst = Math.round(sub * (gstRate / 100) * 100) / 100;
 
-        var delFee = 0;
-
-        var total = Math.round((sub + gst + delFee) * 100) / 100;
-        return { sub: sub, gst: gst, delivery: delFee, total: total };
+        var total = Math.round((sub + gst) * 100) / 100;
+        return { sub: sub, gst: gst, total: total };
     }
 
     function renderCart() {
@@ -326,27 +320,10 @@
         sumSub.textContent = formatMoney(t.sub);
         sumGst.textContent = formatMoney(t.gst);
 
-        if (rowDeliveryFee && sumDelivery) {
-            if (t.delivery > 0) {
-                rowDeliveryFee.hidden = false;
-                sumDelivery.textContent = formatMoney(t.delivery);
-            } else {
-                rowDeliveryFee.hidden = true;
-            }
-        }
-
         sumTotal.textContent = formatMoney(t.total);
     }
 
     if (searchEl) searchEl.addEventListener('input', renderGrid);
-
-    if (orderType) {
-        orderType.addEventListener('change', function () {
-            var isDineIn = orderType.value === 'DINE_IN';
-            if (wrapTable) wrapTable.style.display = isDineIn ? 'block' : 'none';
-            renderCart();
-        });
-    }
 
     if (btnPlace) {
         btnPlace.addEventListener('click', function () {
@@ -356,23 +333,13 @@
                 return;
             }
 
-            if (orderType.value === 'DINE_IN') {
-                var selectedId = selectedTableInput ? selectedTableInput.value : '0';
-
-                if (!selectedId || selectedId === '0') {
-                    window.SRMS.toast('Vui lòng chọn bàn trước', true);
-                    return;
-                }
+            var selectedId = selectedTableInput ? selectedTableInput.value : '0';
+            if (!selectedId || selectedId === '0') {
+                window.SRMS.toast('Vui lòng chọn bàn trước', true);
+                return;
             }
-
-            // Show/hide address field based on order type
-            var wrapAddr = document.getElementById('wrapCheckoutAddr');
-            var isDineIn = orderType.value === 'DINE_IN';
-            if (wrapAddr) wrapAddr.style.display = isDineIn ? 'none' : 'block';
-
-            // Update modal title
             var modalTitle = document.getElementById('checkoutModalTitle');
-            if (modalTitle) modalTitle.textContent = isDineIn ? 'Thông tin dùng tại quán' : 'Thông tin giao hàng';
+            if (modalTitle) modalTitle.textContent = 'Thông tin dùng tại quán';
 
             checkoutModal.classList.add('is-active');
             showStep('Address');
@@ -382,9 +349,7 @@
     document.getElementById('btnNextToPayment')?.addEventListener('click', () => {
         var name = (document.getElementById('checkoutName').value || '').trim();
         var phone = (document.getElementById('checkoutPhone').value || '').trim();
-        var addr = (document.getElementById('checkoutAddr')?.value || '').trim();
-
-        if (!name || !phone || (orderType.value === 'DELIVERY' && !addr)) {
+        if (!name || !phone) {
             window.SRMS.toast('Vui lòng nhập đầy đủ thông tin bắt buộc', true);
             return;
         }
@@ -394,28 +359,12 @@
     document.getElementById('btnNextToConfirm')?.addEventListener('click', () => {
         var name = (document.getElementById('checkoutName')?.value || '').trim();
         var phone = (document.getElementById('checkoutPhone')?.value || '').trim();
-        var addr = (document.getElementById('checkoutAddr')?.value || '').trim();
-        var method = document.querySelector('input[name="paymentMethod"]:checked').value;
 
         document.getElementById('confirmSummaryName').textContent = 'Họ tên: ' + name;
         document.getElementById('confirmSummaryPhone').textContent = 'Điện thoại: ' + phone;
 
         var summaryAddr = document.getElementById('confirmSummaryAddr');
-        if (summaryAddr) {
-            if (orderType.value === 'DELIVERY') {
-                summaryAddr.textContent = 'Địa chỉ: ' + addr;
-                summaryAddr.style.display = 'block';
-            } else {
-                summaryAddr.style.display = 'none';
-            }
-        }
-
-        if (method === 'UPI') {
-            document.getElementById('upiQrSection').style.display = 'block';
-            document.getElementById('upiAmount').textContent = lineTotals().total;
-        } else {
-            document.getElementById('upiQrSection').style.display = 'none';
-        }
+        if (summaryAddr) summaryAddr.textContent = 'Bàn: ' + selectedTableInput.options[selectedTableInput.selectedIndex].text.trim();
 
         showStep('Confirm');
     });
@@ -426,26 +375,21 @@
         btn.textContent = 'Đang xử lý...';
 
         var lines = Object.keys(cart).map(k => ({ menu_item_id: Number(k), quantity: cart[k] }));
-        var method = document.querySelector('input[name="paymentMethod"]:checked').value;
-        var isDineIn = orderType.value === 'DINE_IN';
-
-        var tableIdValue = isDineIn && selectedTableInput ? Number(selectedTableInput.value || 0) : 0;
+        var tableIdValue = selectedTableInput ? Number(selectedTableInput.value || 0) : 0;
 
         var payload = {
-            type: orderType.value,
+            type: 'DINE_IN',
             cart: lines,
-            table_id: isDineIn ? tableIdValue : null,
+            table_id: tableIdValue,
             customer_name: (document.getElementById('checkoutName').value || '').trim(),
-            customer_phone: (document.getElementById('checkoutPhone').value || '').trim(),
-            delivery_address: isDineIn ? null : (document.getElementById('checkoutAddr')?.value || '').trim(),
-            payment_method: method
+            customer_phone: (document.getElementById('checkoutPhone').value || '').trim()
         };
 
         try {
             var res = await window.SRMS.apiPostJson('api/order-place', payload);
             if (res.success) {
                 document.getElementById('successOrderId').textContent = '#' + (res.order_code || '---');
-                document.getElementById('successPayment').textContent = method;
+                document.getElementById('successPayment').textContent = 'Tại quầy';
                 cart = {};
                 renderCart();
                 renderGrid();

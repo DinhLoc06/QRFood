@@ -49,7 +49,7 @@ async function renderOrderQrPage(_req, res, next) {
         const qrImage = await QRCode.toDataURL(url, { errorCorrectionLevel: 'M', margin: 2, width: 320 });
         res.render('pages/order-qr', {
             ...res.locals,
-            title: 'Mã QR gọi món | Velvet Plate',
+            title: 'Mã QR gọi món | Mì Cay Seoul',
             orderUrl: url,
             qrImage,
         });

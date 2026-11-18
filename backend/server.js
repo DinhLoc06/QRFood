@@ -47,7 +47,7 @@ app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
     res.locals.role = req.session.user?.role || 'guest';
     res.locals.current = (req.path.replace(baseUrl, '').split('/').filter(Boolean)[0]) || '';
-    res.locals.title = 'Velvet Plate';
+    res.locals.title = 'Mì Cay Seoul';
     res.locals.flashError = req.session.flashError || '';
     delete req.session.flashError;
     res.locals.gstRate = gstRate;
@@ -213,11 +213,6 @@ function csrfJson(req, res, next) {
     }
     next();
 }
-function locationSchemaError(error, res) {
-    if (error.code === 'ER_NO_SUCH_TABLE') return jsonError(res, 'Chưa cài đặt dữ liệu khu vực. Hãy nhập database/location_schema.sql.', 503);
-    throw error;
-}
-
 const uploadDir = path.join(root, 'frontend', 'assets', 'uploads', 'menu');
 fs.mkdirSync(uploadDir, { recursive: true });
 const upload = multer({
@@ -235,11 +230,12 @@ const upload = multer({
     },
 });
 
-app.get('/', async (_req, res, next) => {
-    try { view(res, 'pages/home', { title: 'Trang chủ | Velvet Plate', featured: menuWithImage((await menuItems(true)).slice(0, 6)) }); }
+app.get('/', async (req, res, next) => {
+    if (req.session.user?.role === 'kitchen') return res.redirect(`${baseUrl}/kitchen`);
+    try { view(res, 'pages/home', { title: 'Trang chủ | Mì Cay Seoul', featured: menuWithImage((await menuItems(true)).slice(0, 6)) }); }
     catch (error) { next(error); }
 });
-app.get('/login', guestOnly, (req, res) => view(res, 'pages/login', { title: 'Đăng nhập | Velvet Plate' }));
+app.get('/login', guestOnly, (req, res) => view(res, 'pages/login', { title: 'Đăng nhập | Mì Cay Seoul' }));
 app.post('/login', guestOnly, csrfForm, async (req, res, next) => {
     try {
         const email = safeText(req.body.email, 128).toLowerCase();
@@ -255,7 +251,7 @@ app.post('/login', guestOnly, csrfForm, async (req, res, next) => {
         res.redirect(`${baseUrl}/${destination}`);
     } catch (error) { next(error); }
 });
-app.get('/register', guestOnly, (_req, res) => view(res, 'pages/register', { title: 'Tạo tài khoản | Velvet Plate' }));
+app.get('/register', guestOnly, (_req, res) => view(res, 'pages/register', { title: 'Tạo tài khoản | Mì Cay Seoul' }));
 app.post('/register', guestOnly, csrfForm, async (req, res, next) => {
     try {
         const email = safeText(req.body.email, 128).toLowerCase();
@@ -276,11 +272,12 @@ app.post('/register', guestOnly, csrfForm, async (req, res, next) => {
     } catch (error) { next(error); }
 });
 app.get('/logout', (req, res) => req.session.destroy(() => res.redirect(`${baseUrl}/login`)));
-app.get('/menu', async (_req, res, next) => {
+app.get('/menu', async (req, res, next) => {
+    if (req.session.user?.role === 'kitchen') return res.status(403).send('Tài khoản bếp không có quyền đặt món');
     try {
         const tables = await query('SELECT * FROM `tables` ORDER BY label');
         const menu = menuWithImage(await menuItems(true));
-        view(res, 'pages/public_menu', { title: 'Thực đơn | Velvet Plate', extraScripts: ['public_menu.js'], tables, menu, categories: await categories() });
+        view(res, 'pages/public_menu', { title: 'Thực đơn | Mì Cay Seoul', extraScripts: ['public_menu.js'], tables, menu, categories: await categories() });
     } catch (error) { next(error); }
 });
 app.use('/qr', createOrderQrRoutes(pageAuth(['admin'])));
@@ -288,30 +285,30 @@ app.get('/dashboard', pageAuth(['admin']), async (_req, res, next) => {
     try {
         const stats = await dashboardStats();
         view(res, 'pages/dashboard', {
-            title: 'Tổng quan | Velvet Plate', extraScripts: ['dashboard.js'], stats, popular: stats.popular,
+            title: 'Tổng quan | Mì Cay Seoul', extraScripts: ['dashboard.js'], stats, popular: stats.popular,
             statusCounts: stats.status_counts, chartRevenue: stats.revenue_by_day,
             dashPayload: { revenueByDay: stats.revenue_by_day, statusCounts: stats.status_counts, popular: stats.popular },
         });
     }
     catch (error) { next(error); }
 });
-app.get('/kitchen', pageAuth(['admin', 'kitchen']), (_req, res) => view(res, 'pages/kitchen', { title: 'Nhà bếp | Velvet Plate', extraScripts: ['kitchen.js'] }));
+app.get('/kitchen', pageAuth(['admin', 'kitchen']), (_req, res) => view(res, 'pages/kitchen', { title: 'Nhà bếp | Mì Cay Seoul', extraScripts: ['kitchen.js'] }));
 app.get('/pos', pageAuth(['admin', 'staff']), async (_req, res, next) => {
     try {
         const tables = await query('SELECT * FROM `tables` ORDER BY label');
         const menuInitial = menuWithImage(await menuItems(true));
         const stats = await one("SELECT COUNT(*) AS orders, COALESCE(SUM(CASE WHEN status='completed' THEN total ELSE 0 END),0) AS revenue FROM orders WHERE DATE(created_at)=CURDATE()");
-        view(res, 'pages/pos', { title: 'Tạo đơn hàng | Velvet Plate', extraScripts: ['pos.js'], tables, categories: await categories(), menuInitial, stats: { ...stats, tables_occ: (await tableStats()).occupied } });
+        view(res, 'pages/pos', { title: 'Tạo đơn hàng | Mì Cay Seoul', extraScripts: ['pos.js'], tables, categories: await categories(), menuInitial, stats: { ...stats, tables_occ: (await tableStats()).occupied } });
     } catch (error) { next(error); }
 });
 app.get('/orders', pageAuth(['admin', 'staff', 'customer']), async (req, res, next) => {
     try {
         const customer = req.session.user.role === 'customer';
-        view(res, 'pages/orders', { title: 'Đơn hàng | Velvet Plate', extraScripts: ['orders.js'], orders: await recentOrders(customer ? 50 : 80, customer ? req.session.user.id : null) });
+        view(res, 'pages/orders', { title: 'Đơn hàng | Mì Cay Seoul', extraScripts: ['orders.js'], orders: await recentOrders(customer ? 50 : 80, customer ? req.session.user.id : null) });
     } catch (error) { next(error); }
 });
 app.get('/tables', pageAuth(['admin', 'staff']), async (_req, res, next) => {
-    try { view(res, 'pages/tables', { title: 'Bàn ăn | Velvet Plate', extraScripts: ['tables.js'], tables: await query('SELECT * FROM `tables` ORDER BY label') }); }
+    try { view(res, 'pages/tables', { title: 'Bàn ăn | Mì Cay Seoul', extraScripts: ['tables.js'], tables: await query('SELECT * FROM `tables` ORDER BY label') }); }
     catch (error) { next(error); }
 });
 app.get('/manage-menu', pageAuth(['admin']), async (_req, res, next) => {
@@ -319,7 +316,7 @@ app.get('/manage-menu', pageAuth(['admin']), async (_req, res, next) => {
         const items = await menuItems(false);
         const cats = await categories();
         const itemsPayload = items.map((item) => ({ ...item, image_url: menuWithImage([item])[0].image_url }));
-        view(res, 'pages/menu_manage', { title: 'Quản lý thực đơn | Velvet Plate', extraScripts: ['menu_manage.js'], items, categories: cats, itemsPayload, catsPayload: cats });
+        view(res, 'pages/menu_manage', { title: 'Quản lý thực đơn | Mì Cay Seoul', extraScripts: ['menu_manage.js'], items, categories: cats, itemsPayload, catsPayload: cats });
     }
     catch (error) { next(error); }
 });
@@ -328,7 +325,7 @@ app.get('/invoice/:id', pageAuth(['admin', 'staff', 'customer']), async (req, re
         const order = await orderById(Number(req.params.id));
         if (!order) return res.status(404).send('Không tìm thấy đơn hàng');
         if (req.session.user.role === 'customer' && Number(order.user_id) !== Number(req.session.user.id)) return res.status(403).send('Bạn không có quyền xem hóa đơn này.');
-        view(res, 'pages/invoice', { title: `Hóa đơn ${order.order_code} | Velvet Plate`, order, items: await orderItems(order.id) });
+        view(res, 'pages/invoice', { title: `Hóa đơn ${order.order_code} | Mì Cay Seoul`, order, items: await orderItems(order.id) });
     } catch (error) { next(error); }
 });
 
@@ -341,7 +338,7 @@ app.get('/api/menu', apiAuth(), async (req, res, next) => {
 app.get('/api/categories', apiAuth(), async (_req, res, next) => {
     try { res.json({ success: true, data: await categories() }); } catch (error) { next(error); }
 });
-app.post('/api/menu-save', apiAuth(['admin']), async (req, res, next) => {
+app.post('/api/menu-save', apiAuth(['admin']), csrfJson, async (req, res, next) => {
     try {
         const id = Number(req.body.id || 0), categoryId = Number(req.body.category_id), name = safeText(req.body.name, 128), price = Number(req.body.price);
         if (!name || !Number.isFinite(price) || price < 0 || !await one('SELECT id FROM categories WHERE id=?', [categoryId])) return jsonError(res, 'Thông tin món ăn không hợp lệ');
@@ -359,7 +356,7 @@ app.post('/api/menu-save', apiAuth(['admin']), async (req, res, next) => {
         res.json({ success: true, id });
     } catch (error) { next(error); }
 });
-app.post('/api/menu-delete', apiAuth(['admin']), async (req, res, next) => {
+app.post('/api/menu-delete', apiAuth(['admin']), csrfJson, async (req, res, next) => {
     try {
         const id = Number(req.body.id);
         if (!id) return jsonError(res, 'Mã dữ liệu không hợp lệ');
@@ -380,7 +377,7 @@ app.post('/api/menu-delete', apiAuth(['admin']), async (req, res, next) => {
         res.json({ success: true, archived: false });
     } catch (error) { next(error); }
 });
-app.post('/api/menu-upload', apiAuth(['admin']), (req, res, next) => upload.single('image')(req, res, (error) => {
+app.post('/api/menu-upload', apiAuth(['admin']), csrfJson, (req, res, next) => upload.single('image')(req, res, (error) => {
     if (error) return jsonError(res, error.code === 'LIMIT_FILE_SIZE' ? 'File too large' : error.message, 400);
     if (!req.file) return jsonError(res, 'Không thể tải ảnh lên');
     fs.readFile(req.file.path, (readError, buffer) => {
@@ -397,7 +394,7 @@ app.post('/api/menu-upload', apiAuth(['admin']), (req, res, next) => upload.sing
         res.json({ success: true, path: `assets/uploads/menu/${req.file.filename}` });
     });
 }));
-app.post('/api/category-save', apiAuth(['admin']), async (req, res, next) => {
+app.post('/api/category-save', apiAuth(['admin']), csrfJson, async (req, res, next) => {
     try {
         const id = Number(req.body.id || 0), name = safeText(req.body.name, 64), sort = Number(req.body.sort_order || 0);
         if (!name) return jsonError(res, 'Vui lòng nhập tên danh mục');
@@ -409,7 +406,7 @@ app.post('/api/category-save', apiAuth(['admin']), async (req, res, next) => {
         res.json({ success: true, id });
     } catch (error) { next(error); }
 });
-app.post('/api/category-delete', apiAuth(['admin']), async (req, res, next) => {
+app.post('/api/category-delete', apiAuth(['admin']), csrfJson, async (req, res, next) => {
     try {
         const id = Number(req.body.id);
         if (!id) return jsonError(res, 'Mã dữ liệu không hợp lệ');
@@ -421,7 +418,7 @@ app.post('/api/category-delete', apiAuth(['admin']), async (req, res, next) => {
 app.get('/api/tables', apiAuth(), async (_req, res, next) => {
     try { res.json({ success: true, data: await query('SELECT * FROM `tables` ORDER BY label') }); } catch (error) { next(error); }
 });
-app.post('/api/table-save', apiAuth(['admin']), async (req, res, next) => {
+app.post('/api/table-save', apiAuth(['admin']), csrfJson, async (req, res, next) => {
     try {
         const id = Number(req.body.id || 0), label = safeText(req.body.label, 32), capacity = Number(req.body.capacity || 4);
         const status = ['available', 'occupied'].includes(req.body.status) ? req.body.status : 'available';
@@ -434,7 +431,7 @@ app.post('/api/table-save', apiAuth(['admin']), async (req, res, next) => {
         res.json({ success: true, id });
     } catch (error) { next(error); }
 });
-app.post('/api/table-delete', apiAuth(['admin']), async (req, res, next) => {
+app.post('/api/table-delete', apiAuth(['admin']), csrfJson, async (req, res, next) => {
     try {
         const id = Number(req.body.id);
         if (!id) return jsonError(res, 'Mã dữ liệu không hợp lệ');
@@ -442,7 +439,7 @@ app.post('/api/table-delete', apiAuth(['admin']), async (req, res, next) => {
         res.json({ success: true });
     } catch (error) { next(error); }
 });
-app.post('/api/table-status', apiAuth(['admin', 'staff']), async (req, res, next) => {
+app.post('/api/table-status', apiAuth(['admin', 'staff']), csrfJson, async (req, res, next) => {
     try {
         const id = Number(req.body.id), status = req.body.status;
         if (!id || !['available', 'occupied'].includes(status)) return jsonError(res, 'Yêu cầu không hợp lệ');
@@ -450,29 +447,40 @@ app.post('/api/table-status', apiAuth(['admin', 'staff']), async (req, res, next
         res.json({ success: true });
     } catch (error) { next(error); }
 });
-app.post('/api/order-place', csrfJson, async (req, res, next) => {
-    const conn = await pool.getConnection();
+app.post('/api/order-place', (req, res, next) => {
+    if (req.session.user?.role === 'kitchen') return jsonError(res, 'Tài khoản bếp không có quyền đặt món', 403);
+    next();
+}, csrfJson, async (req, res, next) => {
+    if (req.body?.type !== 'DINE_IN') return jsonError(res, 'Chỉ hỗ trợ đặt món dùng tại quán');
+    const { type, cart } = req.body;
+    if (!Array.isArray(cart) || !cart.length || cart.length > 100) return jsonError(res, 'Giỏ món đang trống');
+    const tableId = Number(req.body.table_id);
+    if (!Number.isInteger(tableId) || tableId < 1) return jsonError(res, 'Vui lòng chọn bàn hợp lệ');
+    let conn;
     try {
-        const { type, cart } = req.body;
-        if (!['DINE_IN', 'DELIVERY'].includes(type)) return jsonError(res, 'Hình thức nhận món không hợp lệ');
-        if (!Array.isArray(cart) || !cart.length || cart.length > 100) return jsonError(res, 'Giỏ món đang trống');
-        let tableId = null, name = null, phone = null, address = null;
-        if (type === 'DINE_IN') {
-            tableId = Number(req.body.table_id);
-            if (!tableId || !await one('SELECT id FROM `tables` WHERE id=?', [tableId])) return jsonError(res, 'Vui lòng chọn bàn hợp lệ');
-            name = safeText(req.body.customer_name, 128) || null;
-            phone = safeText(req.body.customer_phone, 32) || null;
-        } else {
-            name = safeText(req.body.customer_name, 128); phone = safeText(req.body.customer_phone, 32); address = safeText(req.body.delivery_address, 500);
-            if (!name || !phone || !address) return jsonError(res, 'Vui lòng nhập họ tên, số điện thoại và địa chỉ giao hàng');
+        conn = await pool.getConnection();
+        await conn.beginTransaction();
+        const [tables] = await conn.execute("SELECT id FROM `tables` WHERE id=? AND status='available' FOR UPDATE", [tableId]);
+        if (!tables.length) {
+            await conn.rollback();
+            return jsonError(res, 'Bàn không tồn tại hoặc hiện không còn trống');
         }
+        const name = safeText(req.body.customer_name, 128) || null;
+        const phone = safeText(req.body.customer_phone, 32) || null;
         const lines = [];
         let subtotal = 0;
         for (const line of cart) {
             const menuId = Number(line.menu_item_id), qty = Number(line.quantity);
-            if (!Number.isInteger(menuId) || !Number.isInteger(qty) || menuId < 1 || qty < 1 || qty > 100) return jsonError(res, 'Món hoặc số lượng trong giỏ không hợp lệ');
-            const item = await one('SELECT id,price,is_active FROM menu_items WHERE id=?', [menuId]);
-            if (!item || !item.is_active) return jsonError(res, `Item unavailable: ${menuId}`);
+            if (!Number.isInteger(menuId) || !Number.isInteger(qty) || menuId < 1 || qty < 1 || qty > 100) {
+                await conn.rollback();
+                return jsonError(res, 'Món hoặc số lượng trong giỏ không hợp lệ');
+            }
+            const [items] = await conn.execute('SELECT id,price,is_active FROM menu_items WHERE id=? FOR UPDATE', [menuId]);
+            const item = items[0];
+            if (!item || !item.is_active) {
+                await conn.rollback();
+                return jsonError(res, `Món không còn phục vụ: ${menuId}`);
+            }
             const unitPrice = Number(item.price), lineTotal = Math.round(unitPrice * qty * 100) / 100;
             subtotal += lineTotal;
             lines.push([menuId, qty, unitPrice, lineTotal]);
@@ -481,19 +489,18 @@ app.post('/api/order-place', csrfJson, async (req, res, next) => {
         const tax = Math.round(subtotal * gstRate) / 100;
         const total = Math.round((subtotal + tax) * 100) / 100;
         const code = `ORD-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
-        await conn.beginTransaction();
         const [created] = await conn.execute(`INSERT INTO orders
-            (order_code,type,user_id,table_id,customer_name,customer_phone,delivery_address,status,subtotal,gst_rate,gst_amount,total)
-            VALUES (?,?,?,?,?,?,?,'pending',?,?,?,?)`,
-        [code, type, req.session.user?.id || null, tableId, name, phone, address, subtotal, gstRate, tax, total]);
+            (order_code,type,user_id,table_id,customer_name,customer_phone,status,subtotal,gst_rate,gst_amount,total)
+            VALUES (?,?,?,?,?,?,'pending',?,?,?,?)`,
+        [code, type, req.session.user?.id || null, tableId, name, phone, subtotal, gstRate, tax, total]);
         for (const line of lines) await conn.execute('INSERT INTO order_items (order_id,menu_item_id,quantity,unit_price,line_total) VALUES (?,?,?,?,?)', [created.insertId, ...line]);
-        if (type === 'DINE_IN') await conn.execute("UPDATE `tables` SET status='occupied' WHERE id=?", [tableId]);
+        await conn.execute("UPDATE `tables` SET status='occupied' WHERE id=?", [tableId]);
         await conn.commit();
         res.json({ success: true, order_id: created.insertId, order_code: code });
     } catch (error) {
-        await conn.rollback().catch(() => {});
+        if (conn) await conn.rollback().catch(() => {});
         next(error);
-    } finally { conn.release(); }
+    } finally { if (conn) conn.release(); }
 });
 app.get('/api/order-list', apiAuth(['admin', 'staff', 'customer']), async (req, res, next) => {
     try {
@@ -502,11 +509,11 @@ app.get('/api/order-list', apiAuth(['admin', 'staff', 'customer']), async (req, 
         res.json({ success: true, data: await recentOrders(limit, userId) });
     } catch (error) { next(error); }
 });
-app.post('/api/order-status', apiAuth(['admin', 'staff']), async (req, res, next) => {
+app.post('/api/order-status', apiAuth(['admin', 'staff']), csrfJson, async (req, res, next) => {
     try {
         const id = Number(req.body.order_id), status = req.body.status;
         if (!id || !['pending', 'preparing', 'ready', 'completed'].includes(status)) return jsonError(res, 'Yêu cầu không hợp lệ');
-        await setOrderStatus(id, status);
+        if (!await setOrderStatus(id, status)) return jsonError(res, 'Không tìm thấy đơn hàng', 404);
         res.json({ success: true });
     } catch (error) { next(error); }
 });
@@ -517,68 +524,17 @@ app.get('/api/kitchen-orders', apiAuth(['admin', 'kitchen']), async (_req, res, 
         res.json({ success: true, data, server_time: new Date().toISOString() });
     } catch (error) { next(error); }
 });
-app.post('/api/kitchen-status', apiAuth(['admin', 'kitchen']), async (req, res, next) => {
+app.post('/api/kitchen-status', apiAuth(['admin', 'kitchen']), csrfJson, async (req, res, next) => {
     try {
         const id = Number(req.body.order_id), status = req.body.status;
         if (!id || !['pending', 'preparing', 'ready', 'completed'].includes(status)) return jsonError(res, 'Đơn hàng hoặc trạng thái không hợp lệ');
-        await setOrderStatus(id, status);
+        if (!await setOrderStatus(id, status)) return jsonError(res, 'Không tìm thấy đơn hàng', 404);
         res.json({ success: true });
     } catch (error) { next(error); }
 });
-app.get('/api/location-addresses', async (req, res, next) => {
-    if (!req.session.user) return res.json({ success: true, data: [] });
-    try { res.json({ success: true, data: await query('SELECT * FROM user_addresses WHERE user_id=? ORDER BY is_default DESC,created_at DESC', [req.session.user.id]) }); }
-    catch (error) { if (error.code === 'ER_NO_SUCH_TABLE') locationSchemaError(error, res); else next(error); }
-});
-app.post('/api/location-save', apiAuth(), async (req, res, next) => {
-    try {
-        const d = req.body, userId = req.session.user.id;
-        const required = ['full_name', 'phone_number', 'street_address', 'city', 'pincode'];
-        if (required.some((key) => !safeText(d[key], 500))) return jsonError(res, 'Vui lòng nhập đầy đủ thông tin bắt buộc');
-        if (d.is_default) await query('UPDATE user_addresses SET is_default=0 WHERE user_id=?', [userId]);
-        const values = [d.address_type || 'HOME', safeText(d.full_name, 128), safeText(d.phone_number, 32), safeText(d.flat_number, 64), safeText(d.street_address, 2000), safeText(d.landmark, 128), safeText(d.city, 64), safeText(d.state, 64), safeText(d.pincode, 16), d.is_default ? 1 : 0];
-        if (d.id) await query(`UPDATE user_addresses SET address_type=?,full_name=?,phone_number=?,flat_number=?,street_address=?,landmark=?,city=?,state=?,pincode=?,is_default=? WHERE id=? AND user_id=?`, [...values, Number(d.id), userId]);
-        else await query(`INSERT INTO user_addresses (address_type,full_name,phone_number,flat_number,street_address,landmark,city,state,pincode,is_default,user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)`, [...values, userId]);
-        res.json({ success: true });
-    } catch (error) { if (error.code === 'ER_NO_SUCH_TABLE') locationSchemaError(error, res); else next(error); }
-});
-app.get('/api/location-check', async (req, res, next) => {
-    try {
-        const pincode = safeText(req.query.pincode, 16);
-        if (!pincode) return jsonError(res, 'Vui lòng nhập mã bưu chính');
-        const zone = await one("SELECT * FROM location_zones WHERE is_active=1 AND FIND_IN_SET(?,REPLACE(pincodes,' ',''))", [pincode]);
-        if (zone) return res.json({ success: true, available: true, data: { zone_name: zone.name, delivery_fee: Number(zone.delivery_fee), min_order: Number(zone.min_order), estimated_time: zone.estimated_time } });
-        res.json({ success: true, available: false, message: 'Coming soon to your location!' });
-    } catch (error) { if (error.code === 'ER_NO_SUCH_TABLE') locationSchemaError(error, res); else next(error); }
-});
-app.get('/api/location-geocode', (req, res) => {
-    if (!req.query.lat || !req.query.lng) return jsonError(res, 'Lat/Lng required');
-    res.json({ success: true, data: { full_address: 'Sample Street 123, Central Area, City, 110001', pincode: '110001', city: 'Delhi', state: 'Delhi', area: 'Cannaught Place' } });
-});
-app.get('/api/zone-list', apiAuth(['admin']), async (_req, res, next) => {
-    try { res.json({ success: true, data: await query('SELECT * FROM location_zones ORDER BY created_at DESC') }); } catch (error) { if (error.code === 'ER_NO_SUCH_TABLE') locationSchemaError(error, res); else next(error); }
-});
-app.post('/api/zone-save', apiAuth(['admin']), async (req, res, next) => {
-    try {
-        const d = req.body;
-        if (!safeText(d.name, 128) || !safeText(d.pincodes, 1000)) return jsonError(res, 'Vui lòng nhập tên khu vực và mã bưu chính');
-        const values = [safeText(d.name, 128), safeText(d.pincodes, 1000), Number(d.delivery_fee || 0), Number(d.min_order || 0), safeText(d.estimated_time || '30-45 mins', 32), d.is_active ? 1 : 0];
-        if (d.id) await query('UPDATE location_zones SET name=?,pincodes=?,delivery_fee=?,min_order=?,estimated_time=?,is_active=? WHERE id=?', [...values, Number(d.id)]);
-        else await query('INSERT INTO location_zones (name,pincodes,delivery_fee,min_order,estimated_time,is_active) VALUES (?,?,?,?,?,?)', values);
-        res.json({ success: true });
-    } catch (error) { if (error.code === 'ER_NO_SUCH_TABLE') locationSchemaError(error, res); else next(error); }
-});
-app.get('/api/zone-delete', apiAuth(['admin']), async (req, res, next) => {
-    try {
-        if (!req.query.id) return jsonError(res, 'Vui lòng cung cấp mã dữ liệu');
-        await query('DELETE FROM location_zones WHERE id=?', [Number(req.query.id)]);
-        res.json({ success: true });
-    } catch (error) { if (error.code === 'ER_NO_SUCH_TABLE') locationSchemaError(error, res); else next(error); }
-});
-
 app.use((req, res) => {
     if (req.path.startsWith('/api/')) return jsonError(res, 'Không tìm thấy dữ liệu', 404);
-    res.status(404).render('pages/not-found', { ...res.locals, title: 'Không tìm thấy trang | Velvet Plate' });
+    res.status(404).render('pages/not-found', { ...res.locals, title: 'Không tìm thấy trang | Mì Cay Seoul' });
 });
 app.use((error, req, res, _next) => {
     console.error(`${req.method} ${req.originalUrl}:`, error.message);
@@ -590,8 +546,16 @@ app.use((error, req, res, _next) => {
 const port = Number(process.env.PORT || 3000);
 if (require.main === module) {
     const host = process.env.HOST || '0.0.0.0';
-    app.listen(port, host, () => {
-        console.log(`Velvet Plate listening on port ${port} (local: http://127.0.0.1:${port})`);
+    const server = app.listen(port, host, () => {
+        console.log(`Mì Cay Seoul listening on port ${port} (local: http://127.0.0.1:${port})`);
+    });
+    server.on('error', (error) => {
+        if (error.code === 'EADDRINUSE') {
+            console.error(`Port ${port} is already in use. Stop the other server or set PORT to a free port.`);
+            process.exitCode = 1;
+            return;
+        }
+        throw error;
     });
 }
 module.exports = app;

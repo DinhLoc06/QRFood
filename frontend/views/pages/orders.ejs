@@ -32,7 +32,7 @@
                 <% for (const o of orders || []) { %>
                     <tr data-order-id="<%= o.id %>">
                         <td data-label="Code"><strong><%- e(o.order_code) %></strong></td>
-                        <td data-label="Hình thức"><%- e((o.type ?? '') === 'DINE_IN' ? 'Dùng tại quán' : 'Giao tận nơi') %></td>
+                        <td data-label="Hình thức"><%- e((o.type ?? '') === 'DINE_IN' ? 'Dùng tại quán' : 'Đơn cũ') %></td>
                         <td data-label="Details">
                             <% if ((o.type ?? '') === 'DINE_IN') { %>
                                 <%- e((o.table_label ?? '—')) %>
@@ -41,7 +41,7 @@
                                 <span class="text-muted"><%- e((o.customer_phone ?? '')) %></span>
                             <% } %>
                         </td>
-                        <td data-label="Trạng thái"><span class="badge <%- e('badge-' + o.status.replace(/[^a-z]/g, '')) %>"><%- e(({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng', completed: (o.type ?? '') === 'DELIVERY' ? 'Đã giao' : 'Đã phục vụ' })[o.status] || o.status) %></span></td>
+                        <td data-label="Trạng thái"><span class="badge <%- e('badge-' + o.status.replace(/[^a-z]/g, '')) %>"><%- e(({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng', completed: 'Hoàn tất' })[o.status] || o.status) %></span></td>
                         <td data-label="Tổng tiền"><%= Math.round(Number(o.total)).toLocaleString('vi-VN') %> ₫</td>
                         <td data-label="Thời gian" class="text-muted"><%- e(o.created_at) %></td>
                         <td data-label="Thao tác" class="no-print">
@@ -50,7 +50,7 @@
                                 <% if (role !== 'customer') { %>
                                 <select class="form-select status-select btn-sm" style="min-width:120px;padding:0.35rem;" data-order-id="<%= o.id %>" aria-label="Cập nhật trạng thái cho <%- e(o.order_code) %>">
                                     <% for (const st of ["pending", "preparing", "ready", "completed"]) { %>
-                                        <option value="<%= st %>" <%= (o.status ?? '') === st ? 'selected' : '' %>><%= st === 'completed' ? ((o.type ?? '') === 'DELIVERY' ? 'Đã giao' : 'Đã phục vụ') : ({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng' }[st] || st) %></option>
+                                        <option value="<%= st %>" <%= (o.status ?? '') === st ? 'selected' : '' %>><%= st === 'completed' ? 'Hoàn tất' : ({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng' }[st] || st) %></option>
                                     <% } %>
                                 </select>
                                 <% } %>

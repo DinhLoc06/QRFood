@@ -4,11 +4,12 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#fffaf2">
-<meta name="description" content="Velvet Plate — món Việt tươi ngon, phục vụ tại quán và giao tận nơi.">
-<link rel="icon" type="image/png" href="<%= assetUrl('assets/favicon.png') %>">
-<title><%= String(title || 'Velvet Plate').includes('Velvet Plate') ? title : title + ' | Velvet Plate' %></title>
+<meta name="description" content="Mì Cay Seoul — mì kim chi, mì lẩu Thái và món Hàn nóng hổi tại bàn.">
+<link rel="icon" type="image/svg+xml" href="<%= assetUrl('assets/seoul-favicon.svg') %>">
+<title><%= String(title || 'Mì Cay Seoul').includes('Mì Cay Seoul') ? title : title + ' | Mì Cay Seoul' %></title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<%= assetUrl('css/main.css') %>">
+<link rel="stylesheet" href="<%= assetUrl('css/seoul-theme.css') %>">
 <% if (extraCss) { %><link rel="stylesheet" href="<%= assetUrl('css/' + extraCss) %>"><% } %>
 </head><body class="app-body"><% if (!minimalLayout) { %><a class="skip-link" href="#main-content">Chuyển đến nội dung chính</a><% } %>

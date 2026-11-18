@@ -20,9 +20,9 @@
         return order[i + 1];
     }
 
-    function labelForNext(type, st) {
+    function labelForNext(st) {
         var n = nextStatus(st);
-        if (n === 'completed') return type === 'DELIVERY' ? 'Đã giao hàng' : 'Đã phục vụ';
+        if (n === 'completed') return 'Đã phục vụ';
         if (n === 'preparing') return 'Bắt đầu chế biến';
         if (n === 'ready') return 'Món đã sẵn sàng';
         return 'Cập nhật';
@@ -45,11 +45,11 @@
         var head =
             type === 'DINE_IN'
                 ? 'Bàn ' + escapeHtml(String(o.table_label || '—'))
-                : 'Giao hàng · ' + escapeHtml(String(o.customer_name || ''));
+                : 'Đơn cũ · ' + escapeHtml(String(o.customer_name || ''));
         var meta =
             escapeHtml(String(o.order_code)) +
             ' · ' +
-            escapeHtml(type) +
+            escapeHtml(type === 'DINE_IN' ? 'Dùng tại quán' : 'Đơn cũ') +
             ' · ' +
             escapeHtml(st);
         var lis = items
@@ -71,7 +71,7 @@
                   '" data-next="' +
                   ns +
                   '">' +
-                  labelForNext(type, st) +
+                  labelForNext(st) +
                   '</button>'
                 : '';
         return (

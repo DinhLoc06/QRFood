@@ -7,9 +7,7 @@
     var note = document.getElementById('ordersSyncNote');
     var btn = document.getElementById('btnRefreshOrders');
 
-    function completedLabel(type) {
-        return type === 'DELIVERY' ? 'Đã giao' : 'Đã phục vụ';
-    }
+    function completedLabel() { return 'Hoàn tất'; }
 
     function badgeClass(status) {
         return 'badge badge-' + String(status).replace(/[^a-z]/g, '');
@@ -35,7 +33,7 @@
                   '</span>';
         var opts = ['pending', 'preparing', 'ready', 'completed']
             .map(function (st) {
-                var label = st === 'completed' ? completedLabel(type) : ({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng' }[st] || st);
+                var label = st === 'completed' ? completedLabel() : ({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng' }[st] || st);
                 var sel = String(o.status) === st ? ' selected' : '';
                 return '<option value="' + st + '"' + sel + '>' + label + '</option>';
             })
@@ -55,7 +53,7 @@
             escapeHtml(String(o.order_code)) +
             '</strong></td>' +
             '<td data-label="Hình thức">' +
-            escapeHtml(type === 'DINE_IN' ? 'Dùng tại quán' : 'Giao tận nơi') +
+            escapeHtml(type === 'DINE_IN' ? 'Dùng tại quán' : 'Đơn cũ') +
             '</td>' +
             '<td data-label="Chi tiết">' +
             detail +
@@ -63,7 +61,7 @@
             '<td data-label="Trạng thái"><span class="' +
             badgeClass(o.status) +
             '">' +
-            escapeHtml(({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng', completed: completedLabel(type) }[o.status] || String(o.status))) +
+            escapeHtml(({ pending: 'Chờ xác nhận', preparing: 'Đang chế biến', ready: 'Sẵn sàng', completed: completedLabel() }[o.status] || String(o.status))) +
             '</span></td>' +
             '<td data-label="Tổng tiền">' +
             Math.round(Number(o.total)).toLocaleString('vi-VN') + ' ₫' +

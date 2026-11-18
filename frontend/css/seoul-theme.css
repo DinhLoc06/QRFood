@@ -1,0 +1,198 @@
+/* QRFood Seoul-inspired visual layer. Shared across customer and staff screens. */
+:root {
+    --font-display: "Oswald", "Be Vietnam Pro", sans-serif;
+    --font-body: "Be Vietnam Pro", system-ui, sans-serif;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-lg: 24px;
+    --seoul-red: #c52624;
+    --seoul-red-deep: #981d1b;
+    --seoul-gold: #f6ad35;
+    --seoul-ink: #211b18;
+}
+
+[data-theme="light"] {
+    --bg: #fff9f0;
+    --bg-elevated: #f8eddf;
+    --bg-card: #fffdf9;
+    --bg-input: #ffffff;
+    --text: #251c18;
+    --text-muted: #675b54;
+    --border: #ead9c9;
+    --border-strong: #d6bda9;
+    --accent: #b52120;
+    --accent-hover: #921b1a;
+    --accent-muted: #fbe5df;
+    --success: #326b49;
+    --header-bg: rgba(255, 250, 242, .96);
+    --gradient-brand: linear-gradient(145deg, #d1392b, #9e1d1d);
+}
+
+[data-theme="dark"] {
+    --bg: #171311;
+    --bg-elevated: #241c19;
+    --bg-card: #2c211d;
+    --bg-input: #231b18;
+    --text: #fff8ed;
+    --text-muted: #d5c4b8;
+    --border: #49352e;
+    --border-strong: #6b4a3d;
+    --accent: #ff8e72;
+    --accent-hover: #ffb197;
+    --accent-muted: rgba(255, 117, 89, .16);
+    --success: #9dd5a9;
+    --header-bg: rgba(23, 19, 17, .96);
+    --gradient-brand: linear-gradient(145deg, #e34532, #a42120);
+}
+
+body.app-body { letter-spacing: 0; }
+h1, h2, h3, h4 { letter-spacing: .005em; }
+.page-title, .page-menu-title, .section-heading h2, .home-experience h2, .home-cta h2 { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; line-height: 1.1; }
+.eyebrow { color: var(--accent); letter-spacing: .18em; }
+.btn { min-height: 46px; border-radius: 12px; }
+.btn-primary { color: #fff !important; background: var(--seoul-red); border-color: var(--seoul-red); box-shadow: 0 9px 20px rgba(145, 27, 22, .16); }
+.btn-primary:hover { background: var(--seoul-red-deep); border-color: var(--seoul-red-deep); }
+.btn-outline { border-color: var(--border-strong); }
+.btn:focus-visible, .nav-link:focus-visible, .text-link:focus-visible, .form-input:focus-visible, .form-select:focus-visible, a:focus-visible { outline: 3px solid var(--seoul-gold); outline-offset: 3px; }
+.form-input, .form-select, .form-textarea { min-height: 46px; border-color: var(--border-strong); }
+.card, .stat-card, .menu-card, .cart-panel { border-color: var(--border); box-shadow: 0 12px 30px rgba(72, 34, 19, .06); }
+
+.site-header { border-bottom: 1px solid var(--border); box-shadow: 0 4px 18px rgba(36, 20, 17, .07); }
+.header-inner { min-height: 78px; }
+.brand { gap: .7rem; }
+.brand-text { color: var(--text); font-family: var(--font-display); font-size: 1.48rem; font-weight: 700; letter-spacing: .015em; text-transform: uppercase; line-height: 1; }
+.brand-text small { margin-top: .32rem; color: var(--accent); font-family: var(--font-body); font-size: .54rem; font-weight: 800; letter-spacing: .12em; white-space: nowrap; }
+.seoul-logo-mark { display: inline-grid; flex: 0 0 46px; width: 46px; height: 46px; place-items: center; color: var(--seoul-red); }
+.seoul-logo-mark svg { width: 44px; height: 44px; }
+.nav-link { font-size: .83rem; font-weight: 700; }
+.nav-link.is-active { color: var(--accent); }
+.nav-link.is-active::after { background: var(--seoul-red); }
+.nav-actions .btn-primary { color: #fff; }
+
+.seoul-home { background: var(--bg); }
+.seoul-home .home-hero {
+    display: grid;
+    min-height: min(780px, calc(100svh - 78px));
+    grid-template-columns: 1fr;
+    background: linear-gradient(90deg, rgba(20, 12, 10, .90) 0%, rgba(26, 12, 10, .76) 32%, rgba(28, 13, 10, .14) 75%), url('../assets/seoul-ramen-hero.png') center / cover no-repeat;
+    border-radius: 0 0 30px 30px;
+}
+.seoul-home .home-hero::before { opacity: .14; background-image: radial-gradient(#f6ad35 1px, transparent 1px); background-size: 28px 28px; mask-image: linear-gradient(to right, #000, transparent 60%); }
+.seoul-home .home-hero::after { display: none; }
+.seoul-home .home-hero__content { z-index: 2; max-width: 800px; padding: 5rem max(1.25rem, calc((100vw - 1360px) / 2)) 4rem; color: #fff8ef; }
+.seoul-home .home-hero .eyebrow { color: #ffc465; }
+.seoul-home .home-hero h1 { max-width: 800px; color: #fff8ef; font-family: var(--font-display); font-size: clamp(3.5rem, 7vw, 6.7rem); font-weight: 700; letter-spacing: -.012em; text-transform: uppercase; line-height: 1.02; }
+.seoul-home .home-hero h1 em { color: #ffb33f; font-style: normal; font-weight: 700; }
+.seoul-home .home-hero__lead { max-width: 585px; color: #fff1e4; line-height: 1.7; }
+.seoul-home .home-hero .btn-primary { background: #e03b2b; border-color: #e03b2b; }
+.seoul-home .home-hero .btn-primary:hover { background: #b92c23; border-color: #b92c23; }
+.seoul-home .home-hero .text-link { color: #fff8ef; }
+.seoul-home .home-trust { width: fit-content; margin-top: 3rem; padding: 1rem 1.2rem; background: rgba(24, 15, 13, .58); border: 1px solid rgba(255, 235, 214, .3); border-radius: 16px; backdrop-filter: blur(8px); }
+.seoul-home .home-trust li { border-left-color: rgba(255, 235, 214, .25); }
+.seoul-home .home-trust strong { color: #ffc465; font-family: var(--font-body); font-size: 1rem; }
+.seoul-home .home-trust span { color: #f5e7d9; }
+.seoul-home .hero-stamp { top: auto; right: max(2rem, 6vw); bottom: 3rem; width: 106px; height: 106px; color: #fff8ef; background: var(--seoul-red); border: 2px solid #ffc465; font-family: var(--font-display); font-size: .95rem; line-height: 1.05; box-shadow: 0 12px 36px rgba(0,0,0,.25); }
+
+.seoul-intro { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; max-width: 1360px; margin: -3rem auto 0; position: relative; z-index: 3; padding: 0 1.25rem; }
+.seoul-intro > div { min-width: 0; padding: 1.7rem 2rem; background: var(--bg-card); border: 1px solid var(--border); }
+.seoul-intro > div:first-child { border-radius: 20px 0 0 20px; }
+.seoul-intro > div:last-child { border-radius: 0 20px 20px 0; }
+.seoul-intro__number { color: var(--seoul-red); font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; }
+.seoul-intro h2 { margin: .2rem 0 .45rem; font-family: var(--font-display); font-size: 1.48rem; text-transform: uppercase; }
+.seoul-intro p { margin: 0; color: var(--text-muted); font-size: .82rem; line-height: 1.65; }
+
+.seoul-home .home-section { padding-top: 6rem; padding-bottom: 5.5rem; }
+.seoul-home .home-section::before { width: 48px; height: 5px; background: var(--seoul-red); border-radius: 0; transform: none; }
+.seoul-home .section-heading h2 { color: var(--text); }
+.seoul-home .home-dish-card { border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 12px 28px rgba(70, 25, 15, .08); }
+.seoul-home .home-dish-card:nth-child(3n + 2) { transform: none; }
+.seoul-home .home-dish-card:hover, .seoul-home .home-dish-card:nth-child(3n + 2):hover { transform: translateY(-4px); }
+.seoul-home .home-dish-card__media { border-radius: 20px 20px 0 0; }
+.seoul-home .dish-category { color: #fff; background: rgba(167, 31, 26, .92); }
+.seoul-home .dish-card__footer a { color: #fff; background: var(--seoul-red); border-color: var(--seoul-red); }
+.seoul-home .dish-card__footer a:hover { background: var(--seoul-red-deep); }
+.food-placeholder, .menu-card-placeholder { color: var(--accent); background: radial-gradient(circle at 70% 20%, rgba(246, 173, 53, .25), transparent 36%), linear-gradient(135deg, var(--accent-muted), var(--bg-elevated)); font-family: var(--font-display); font-weight: 700; letter-spacing: .12em; }
+.menu-card-img-wrapper.is-error::after, .vp-dish-media.is-error::after { content: "Mì Cay Seoul"; font-family: var(--font-display); font-weight: 600; }
+
+.seoul-home .home-experience { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); margin: 1rem max(1rem, 3vw); background: #251817; border-radius: 28px; }
+.seoul-home .home-experience__image { min-height: 560px; clip-path: none; }
+.seoul-home .home-experience__image img { filter: none; }
+.seoul-home .home-experience__content { color: #fff8ef; }
+.seoul-home .home-experience__content h2 { color: #fff8ef; }
+.seoul-home .home-experience__content .eyebrow { color: #ffc465; }
+.seoul-home .home-experience__content > p:not(.eyebrow) { color: #e9d8c9; }
+.spice-levels { display: flex; flex-wrap: wrap; gap: .55rem; margin: 1.75rem 0 2rem; }
+.spice-levels span { display: grid; width: 42px; height: 42px; place-items: center; color: #fff; background: #a72a21; border: 1px solid rgba(255,255,255,.25); border-radius: 50%; font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; }
+.spice-levels span:nth-child(n+4) { background: #d73825; }
+.spice-levels span:nth-child(n+6) { background: #f16827; }
+
+.seoul-categories { max-width: 1400px; margin: 0 auto; padding: 6rem 1.25rem; }
+.seoul-categories__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+.seoul-category-card { position: relative; display: block; min-width: 0; aspect-ratio: 1 / .9; overflow: hidden; border-radius: 18px; background: #291914; text-decoration: none; }
+.seoul-category-card::after { content: ''; position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, rgba(19, 9, 6, .86)); }
+.seoul-category-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
+.seoul-category-card:hover img { transform: scale(1.04); }
+.seoul-category-card > span { position: absolute; z-index: 1; right: 1.3rem; bottom: 1.3rem; left: 1.3rem; display: flex; justify-content: space-between; gap: 1rem; color: #fff; font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 2.1rem); text-transform: uppercase; }
+.seoul-category-card > span span { color: #ffc465; }
+.seoul-home .home-cta { color: #fff; background: linear-gradient(110deg, #a9211e, #da3a27); border-radius: 24px; }
+.seoul-home .home-cta::after { border-color: rgba(255, 188, 70, .14); }
+.seoul-home .home-cta .eyebrow { color: #ffcf84; }
+.seoul-home .home-cta h2 { color: #fff; }
+.seoul-home .home-cta .btn-light { color: #8f211e; background: #fff8ed; border-color: #fff8ed; }
+
+.page-menu-hero { color: #fff8ef; background: linear-gradient(100deg, rgba(31, 14, 12, .91), rgba(31, 14, 12, .5)), url('../assets/seoul-ramen-hero.png') center 52% / cover no-repeat; border-radius: 20px; }
+.page-menu-hero .eyebrow { color: #ffc465; }
+.page-menu-title { color: #fff8ef; }
+.page-menu-sub { color: #f2ddd0; }
+.menu-page-wrap .menu-toolbar { margin-top: 2rem; }
+.menu-card { border-radius: 18px; }
+.menu-card-img-wrapper { background: var(--bg-elevated); }
+.menu-card-body { background: var(--bg-card); }
+.menu-card-title { color: var(--text); font-family: var(--font-display); font-size: 1.4rem; text-transform: uppercase; }
+.menu-card-price { color: var(--accent); font-variant-numeric: tabular-nums; }
+.cart-panel { border-radius: 18px; }
+.cart-panel--lux { border: 1px solid var(--border); }
+.chip.is-active { color: #fff; background: var(--seoul-red); border-color: var(--seoul-red); }
+.restaurant-footer { background: #1c1513; }
+.restaurant-footer__bottom { border-top-color: #493129; }
+
+html, body { scrollbar-width: auto !important; }
+::-webkit-scrollbar { display: initial !important; width: 10px !important; height: 10px !important; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
+
+@media (max-width: 900px) {
+    .seoul-home .home-hero { min-height: 720px; background-position: 64% center; }
+    .seoul-home .home-hero__content { padding: 4rem 1.5rem; }
+    .seoul-home .home-experience { grid-template-columns: 1fr; }
+    .seoul-home .home-experience__image { min-height: 380px; }
+}
+
+@media (max-width: 719px) {
+    .brand-text { font-size: 1.23rem; }
+    .brand-text small { font-size: .46rem; letter-spacing: .04em; }
+    .seoul-logo-mark { flex-basis: 40px; width: 40px; height: 40px; }
+    .seoul-logo-mark svg { width: 39px; height: 39px; }
+    .seoul-home .home-hero { min-height: 720px; background-position: 66% center; border-radius: 0 0 20px 20px; }
+    .seoul-home .home-hero::after { display: block; background: linear-gradient(180deg, rgba(19, 10, 8, .42), rgba(19, 10, 8, .88)); }
+    .seoul-home .home-hero__content { align-self: end; padding: 8rem 1.25rem 2.25rem; }
+    .seoul-home .home-hero h1 { font-size: clamp(3.2rem, 14vw, 5rem); }
+    .seoul-home .home-trust { width: 100%; margin-top: 2rem; padding: .8rem; }
+    .seoul-home .home-trust li { min-width: 33.33%; padding: 0 .4rem; }
+    .seoul-home .home-trust strong { font-size: .75rem; }
+    .seoul-home .home-trust span { font-size: .63rem; }
+    .seoul-home .hero-stamp { display: none; }
+    .seoul-intro { grid-template-columns: 1fr; margin-top: 0; padding: 1rem; }
+    .seoul-intro > div, .seoul-intro > div:first-child, .seoul-intro > div:last-child { padding: 1.1rem 1.25rem; border-radius: 12px; }
+    .seoul-home .home-section { padding-top: 4rem; }
+    .seoul-home .home-experience { border-radius: 20px; }
+    .seoul-home .home-experience__image { min-height: 300px; }
+    .seoul-categories { padding: 4rem 1.25rem; }
+    .seoul-categories__grid { grid-template-columns: 1fr; }
+    .seoul-category-card { aspect-ratio: 1.5 / 1; }
+    .page-menu-hero { border-radius: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .seoul-category-card img, .home-dish-card, .home-dish-card img { transition: none !important; }
+    .seoul-category-card:hover img, .home-dish-card:hover img { transform: none !important; }
+}

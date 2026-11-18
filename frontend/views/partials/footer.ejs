@@ -1,11 +1,11 @@
 <% if (!minimalLayout) { %>
 <footer class="site-footer restaurant-footer">
     <div class="restaurant-footer__main">
-        <div class="restaurant-footer__brand"><%- include('logo', { logoClass: 'vp-logo-on-mark' }) %><div><strong>Velvet Plate</strong><span>Bếp Việt mỗi ngày</span></div></div>
-        <p class="restaurant-footer__intro">Món ngon được nấu bằng sự tử tế, phục vụ trong một không gian gần gũi và ấm áp.</p>
-        <div class="restaurant-footer__info"><div><span>Giờ mở cửa</span><strong>10:00 – 22:00, mỗi ngày</strong></div><div><span>Đặt bàn & hỗ trợ</span><a href="tel:+84987654321">098 765 4321</a></div><div><span>Địa chỉ</span><strong>Trung tâm TP. Hồ Chí Minh</strong></div></div>
+        <div class="restaurant-footer__brand"><%- include('logo', { logoClass: 'vp-logo-on-mark' }) %><div><strong>Mì Cay Seoul</strong><span>Đậm vị Hàn · Cay đúng điệu</span></div></div>
+        <p class="restaurant-footer__intro">Tô mì cay nóng hổi, món Hàn đậm vị và những cuộc hẹn vui hơn bên bàn ăn.</p>
+        <div class="restaurant-footer__info"><div><span>Phục vụ</span><strong>Gọi món tại bàn qua mã QR</strong></div><div><span>Thực đơn</span><a href="<%- e(appUrl('menu')) %>">Khám phá các món Hàn</a></div><div><span>Vị cay</span><strong>7 cấp độ cho bạn lựa chọn</strong></div></div>
     </div>
-    <div class="restaurant-footer__bottom"><span>© <%= new Date().getFullYear() %> Velvet Plate</span><span>Ăn ngon · Sống vui</span></div>
+    <div class="restaurant-footer__bottom"><span>© <%= new Date().getFullYear() %> Mì Cay Seoul</span><span>Nóng hổi · Đậm vị · Vui hết mình</span></div>
 </footer></div>
 <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
 <script>window.SRMS=window.SRMS||{};window.SRMS.baseUrl=<%- jsonForScript(baseUrl) %>;window.SRMS.csrfToken=<%- jsonForScript(csrfToken) %>;window.SRMS.pollMs=5000;window.SRMS.gstRate=<%= gstRate %>;</script>

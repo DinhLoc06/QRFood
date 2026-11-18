@@ -6,6 +6,8 @@ const path = require('node:path');
 const test = require('node:test');
 const ejs = require('ejs');
 const app = require('../backend/server');
+const pool = require('../backend/config/database');
+const bcrypt = require('bcryptjs');
 
 let server;
 let base;
@@ -47,9 +49,10 @@ test('login rejects missing CSRF tokens without contacting the database', async 
 });
 
 test('unauthenticated API requests and protected pages are rejected cleanly', async () => {
-    const guestAddresses = await fetch(`${base}/api/location-addresses`);
-    assert.equal(guestAddresses.status, 200);
-    assert.deepEqual(await guestAddresses.json(), { success: true, data: [] });
+    const removedLocations = await fetch(`${base}/api/location-addresses`);
+    assert.equal(removedLocations.status, 404);
+    const removedZones = await fetch(`${base}/api/zone-list`);
+    assert.equal(removedZones.status, 404);
 
     const api = await fetch(`${base}/api/order-list`);
     assert.equal(api.status, 401);
@@ -70,6 +73,55 @@ test('unauthenticated API requests and protected pages are rejected cleanly', as
     });
     assert.equal(order.status, 403);
     assert.match((await order.json()).error, /Phiên đăng nhập không hợp lệ/);
+});
+
+test('delivery orders are rejected and kitchen accounts cannot order', async () => {
+    const loginPage = await fetch(`${base}/login`);
+    const cookie = loginPage.headers.get('set-cookie').split(';')[0];
+    const token = (await loginPage.text()).match(/name="csrf_token" value="([a-f0-9]{64})"/)[1];
+    const delivery = await fetch(`${base}/api/order-place`, {
+        method: 'POST',
+        headers: { cookie, 'x-csrf-token': token, 'content-type': 'application/json' },
+        body: JSON.stringify({ type: 'DELIVERY', cart: [{ menu_item_id: 1, quantity: 1 }] }),
+    });
+    assert.equal(delivery.status, 400);
+    assert.match((await delivery.json()).error, /Chỉ hỗ trợ đặt món dùng tại quán/);
+
+    const originalExecute = pool.execute;
+    pool.execute = async () => [[{
+        id: 99,
+        email: 'kitchen@example.test',
+        role: 'kitchen',
+        full_name: 'Kitchen',
+        password_hash: bcrypt.hashSync('password', 4),
+    }]];
+    let kitchenCookie;
+    try {
+        const login = await fetch(`${base}/login`, {
+            method: 'POST',
+            redirect: 'manual',
+            headers: { cookie, 'content-type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ email: 'kitchen@example.test', password: 'password', csrf_token: token }),
+        });
+        assert.equal(login.status, 302);
+        assert.equal(login.headers.get('location'), '/kitchen');
+        kitchenCookie = login.headers.get('set-cookie').split(';')[0];
+    } finally {
+        pool.execute = originalExecute;
+    }
+    const menu = await fetch(`${base}/menu`, { headers: { cookie: kitchenCookie } });
+    assert.equal(menu.status, 403);
+    const kitchen = await fetch(`${base}/kitchen`, { headers: { cookie: kitchenCookie } });
+    assert.equal(kitchen.status, 200);
+    const pos = await fetch(`${base}/pos`, { headers: { cookie: kitchenCookie } });
+    assert.equal(pos.status, 403);
+    const order = await fetch(`${base}/api/order-place`, {
+        method: 'POST',
+        headers: { cookie: kitchenCookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ type: 'DINE_IN', cart: [{ menu_item_id: 1, quantity: 1 }], table_id: 1 }),
+    });
+    assert.equal(order.status, 403);
+    assert.match((await order.json()).error, /Tài khoản bếp không có quyền đặt món/);
 });
 
 test('static browser assets and the EJS 404 page are served', async () => {
@@ -135,8 +187,10 @@ test('all EJS screens render with representative request data', async () => {
             if (filename === 'public_menu.ejs' && role === 'guest') {
                 assert.match(html, /id="btnPlace"/);
                 assert.match(html, /Chọn bàn/);
+                assert.doesNotMatch(html, /DELIVERY|Giao tận nơi|Địa chỉ giao hàng/);
                 assert.doesNotMatch(html, /Sign in to Order/);
             }
+            if (filename === 'pos.ejs') assert.doesNotMatch(html, /DELIVERY|Giao tận nơi|Địa chỉ giao hàng/);
         }
     }
 });

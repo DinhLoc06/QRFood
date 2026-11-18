@@ -72,78 +72,8 @@
                 </div>
             </div>
         </section>
-        </section>
-        <section class="card" id="locationMgmtSection">
-            <div class="card-body">
-                <h2 class="card-title">Khu vực giao hàng</h2>
-                <div class="table-responsive">
-                    <table class="table-lux">
-                        <thead>
-                            <tr>
-                                <th>Tên khu vực</th>
-                                <th>Mã bưu chính</th>
-                                <th>Phí giao hàng</th>
-                                <th>Đơn tối thiểu</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="zoneTableBody">
-                            <tr><td colspan="5" class="text-muted">Đang tải khu vực...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <button type="button" class="btn btn-primary btn-sm mt-3" id="btnAddZone">Thêm khu vực giao hàng</button>
-            </div>
-        </section>
     </div>
 </main>
-
-<!-- Zone Management Modal -->
-<div class="modal" id="zoneModal">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title" id="zoneModalTitle">Thêm khu vực giao hàng</h3>
-            <button class="modal-close" id="closeZoneModal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="zoneForm">
-                <input type="hidden" id="zoneId">
-                <div class="form-group">
-                    <label class="form-label" for="zoneName">Tên khu vực</label>
-                    <input type="text" class="form-input" id="zoneName" required placeholder="Ví dụ: Quận 1">
-                </div>
-                <div class="form-group mt-3">
-                    <label class="form-label" for="zonePincodes">Mã bưu chính phục vụ (phân cách bằng dấu phẩy)</label>
-                    <textarea class="form-textarea" id="zonePincodes" required placeholder="Ví dụ: 700000, 700001"></textarea>
-                </div>
-                <div class="grid-stats grid-stats--auto mt-3">
-                    <div class="form-group">
-                        <label class="form-label" for="zoneFee">Phí giao hàng (VNĐ)</label>
-                        <input type="number" class="form-input" id="zoneFee" step="0.01" value="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="zoneMin">Đơn tối thiểu (VNĐ)</label>
-                        <input type="number" class="form-input" id="zoneMin" step="0.01" value="0.00">
-                    </div>
-                </div>
-                <div class="form-group mt-3">
-                        <label class="form-label" for="zoneTime">Thời gian giao dự kiến</label>
-                    <input type="text" class="form-input" id="zoneTime" value="30-45 phút">
-                </div>
-                <div class="form-group mt-3">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="checkbox" id="zoneActive" checked> Đang hoạt động
-                    </label>
-                </div>
-                <div class="btn-group mt-3">
-                    <button type="submit" class="btn btn-primary" id="btnSaveZone">Lưu khu vực</button>
-                    <button type="button" class="btn btn-outline" id="btnCancelZone">Hủy</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
 <script id="srms-dashboard-json" type="application/json"><%- jsonForScript(dashPayload) %></script>

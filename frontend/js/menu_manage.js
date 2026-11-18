@@ -190,7 +190,11 @@
         var url = base + '/api/menu-upload';
         var res = await fetch(url, {
             method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                Accept: 'application/json',
+                'X-CSRF-Token': (window.SRMS && window.SRMS.csrfToken) || '',
+            },
             body: fd,
         });
         var text = await res.text();

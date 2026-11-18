@@ -3,7 +3,7 @@
     <header class="page-header">
         <div>
             <h1 class="page-title">Hóa đơn</h1>
-            <p class="page-sub"><%- e((order.order_code ?? '')) %> · <%- e((order.type ?? '')) %></p>
+            <p class="page-sub"><%- e((order.order_code ?? '')) %> · <%- e((order.type ?? '') === 'DINE_IN' ? 'Dùng tại quán' : 'Đơn cũ') %></p>
         </div>
         <div class="btn-group no-print">
             <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">In hóa đơn</button>
@@ -15,12 +15,12 @@
         <div class="card-body">
             <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;">
                 <div>
-                    <p class="mt-0" style="font-weight:700;margin:0 0 0.25rem;">Velvet Plate</p>
+                    <p class="mt-0" style="font-weight:700;margin:0 0 0.25rem;">Mì Cay Seoul</p>
                     <p class="text-muted mt-0" style="font-size:0.9rem;">Hóa đơn đã bao gồm thuế</p>
                 </div>
                 <div style="text-align:right;">
                     <p class="mt-0"><strong>Ngày:</strong> <%- e(order.created_at) %></p>
-                    <p class="mt-0"><strong>Trạng thái:</strong> <%- e(order.status) %><%= (order.status ?? '') === 'completed' ? ' (' + e(doneLabel) + ')' : '' %></p>
+                    <p class="mt-0"><strong>Trạng thái:</strong> <%- e(order.status) %><%= (order.status ?? '') === 'completed' ? ' (Hoàn tất)' : '' %></p>
                 </div>
             </div>
 
@@ -29,7 +29,6 @@
             <% } else { %>
                 <p><strong>Khách hàng:</strong> <%- e((order.customer_name ?? '')) %></p>
                 <p><strong>Điện thoại:</strong> <%- e((order.customer_phone ?? '')) %></p>
-                <p><strong>Địa chỉ:</strong><br><%= nl2br(e((order.delivery_address ?? ''))) %></p>
             <% } %>
 
             <div class="table-wrap" style="margin-top:1rem;">
