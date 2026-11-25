@@ -67,6 +67,15 @@
         </aside>
     </div>
 </main>
+<div class="mobile-cart-bar is-hidden" id="mobileCartBar">
+    <div class="mobile-cart-bar__summary" aria-live="polite" aria-atomic="true">
+        <strong id="mobileCartCount">0 món</strong>
+        <span id="mobileCartTotal">0 ₫</span>
+    </div>
+    <button type="button" class="btn btn-primary mobile-cart-bar__checkout" id="mobileCheckoutButton">
+        Thanh toán
+    </button>
+</div>
 <script type="application/json" id="srms-pos-initial"><%- jsonForScript({ menu, gstRate }) %></script>
 
 <!-- Checkout Multi-step Modal -->

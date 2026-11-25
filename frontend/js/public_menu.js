@@ -17,6 +17,10 @@
     var sumGst = document.getElementById('sumGst');
     var sumTotal = document.getElementById('sumTotal');
     var btnPlace = document.getElementById('btnPlace');
+    var mobileCartBar = document.getElementById('mobileCartBar');
+    var mobileCartCount = document.getElementById('mobileCartCount');
+    var mobileCartTotal = document.getElementById('mobileCartTotal');
+    var mobileCheckoutButton = document.getElementById('mobileCheckoutButton');
     var selectedTableInput = document.getElementById('selectedTable');
     var tableError = document.getElementById('tableError');
 
@@ -282,9 +286,9 @@
         cartLines.querySelectorAll('.cart-line').forEach(function (n) { n.remove(); });
         if (ids.length === 0) {
             cartEmpty.classList.remove('is-hidden');
-            cartSummary.classList.remove('is-hidden'); // The wrapper stays, but logic needs careful check
-            // Actually public_menu has a slightly different wrap. Let's fix it properly.
             cartSummary.classList.add('is-hidden');
+            if (mobileCartBar) mobileCartBar.classList.add('is-hidden');
+            document.body.classList.remove('has-mobile-cart');
             return;
         }
         cartEmpty.classList.add('is-hidden');
@@ -321,6 +325,13 @@
         sumGst.textContent = formatMoney(t.gst);
 
         sumTotal.textContent = formatMoney(t.total);
+        var itemCount = ids.reduce(function (total, id) {
+            return total + cart[Number(id)];
+        }, 0);
+        if (mobileCartCount) mobileCartCount.textContent = itemCount + ' món trong giỏ';
+        if (mobileCartTotal) mobileCartTotal.textContent = formatMoney(t.total);
+        if (mobileCartBar) mobileCartBar.classList.remove('is-hidden');
+        document.body.classList.add('has-mobile-cart');
     }
 
     if (searchEl) searchEl.addEventListener('input', renderGrid);
@@ -336,6 +347,10 @@
             var selectedId = selectedTableInput ? selectedTableInput.value : '0';
             if (!selectedId || selectedId === '0') {
                 window.SRMS.toast('Vui lòng chọn bàn trước', true);
+                if (selectedTableInput) {
+                    selectedTableInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    selectedTableInput.focus({ preventScroll: true });
+                }
                 return;
             }
             var modalTitle = document.getElementById('checkoutModalTitle');
@@ -343,6 +358,12 @@
 
             checkoutModal.classList.add('is-active');
             showStep('Address');
+        });
+    }
+
+    if (mobileCheckoutButton && btnPlace) {
+        mobileCheckoutButton.addEventListener('click', function () {
+            btnPlace.click();
         });
     }
 
